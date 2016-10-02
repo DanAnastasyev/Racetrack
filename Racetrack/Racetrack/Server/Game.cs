@@ -30,12 +30,21 @@ namespace Racetrack.Server {
 			_players.Remove(playerId);
 		}
 
-		public PlayerModel.PlayerMovementModel UpdatePlayer(string playerId, MoveModel move) {
+		public void UpdatePlayer(string playerId, MoveModel move) {
 			if (!_players.ContainsKey(playerId)) {
+				// TODO: Handling error?
+				return;
+			}
+			_players[playerId].Update(move);
+			++_movesCount;
+		}
+
+		public PlayerModel GetPlayer(string playerId) {
+			if (!_players.ContainsKey(playerId)) {
+				// TODO: Handling error?
 				return null;
 			}
-			++_movesCount;
-			return _players[playerId].Update(move);
+			return _players[playerId];
 		}
 
 		public bool IsEndOfRound() {

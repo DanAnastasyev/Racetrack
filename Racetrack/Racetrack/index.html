@@ -30,11 +30,10 @@
 	$(function() {
 		var game = $.connection.gameHub;
 
-		game.client.showMovements = function(round, name, playerMovement) {
-			var encodedName = $('<div />').text(name).html();
+		game.client.showMovements = function(round, name, prevPos, curPos) {
 			$('#discussion').append('<li><strong>' + round + ': ' + name +
-                '</strong> Moved from (' + playerMovement.XOld + ', ' + playerMovement.YOld +
-                ') to (' + playerMovement.XNew + ', ' + playerMovement.YNew + ')</li>');
+                '</strong> Moved from (' + prevPos.X + ', ' + prevPos.Y +
+                ') to (' + curPos.X + ', ' + curPos.Y + ')</li>');
 		};
 		game.client.beginNextRound = function() {
 			document.getElementById('sendmessage').disabled = false;

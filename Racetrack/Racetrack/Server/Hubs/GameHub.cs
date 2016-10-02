@@ -14,11 +14,12 @@ namespace Racetrack.Server.Hubs {
 		}
 
 		public void UpdatePlayer(MoveModel move) {
-			PlayerModel.PlayerMovementModel playerMovement = 
-				_game.UpdatePlayer(Context.ConnectionId, move);
+			_game.UpdatePlayer(Context.ConnectionId, move);
 
-			Clients.All.showMovements(_game.RoundNumber, 
-				Context.ConnectionId, playerMovement);
+			var player = _game.GetPlayer(Context.ConnectionId);
+
+			Clients.All.showMovements(_game.RoundNumber, Context.ConnectionId, 
+				player?.PrevPosition, player?.CurPosition);
 
 			if (_game.IsEndOfRound()) {
 				Clients.All.beginNextRound();

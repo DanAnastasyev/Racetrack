@@ -2,33 +2,21 @@
 
 namespace Racetrack.Server.Models {
 	public class PlayerModel {
-		// Результат движения игрока
-		public class PlayerMovementModel {
-			[JsonProperty("XOld")]
-			public int XOld { get; }
-			[JsonProperty("YOld")]
-			public int YOld { get; }
-			[JsonProperty("XNew")]
-			public int XNew { get; }
-			[JsonProperty("YNew")]
-			public int YNew { get; }
+		public Coordinates CurPosition { get; private set; }
+		public Coordinates PrevPosition { get; private set; }
+		public Coordinates Inertia { get; private set; }
 
-			public PlayerMovementModel(PlayerModel player, MoveModel move) {
-				XNew = player.XPos;
-				YNew = player.YPos;
-				XOld = XNew - move.GetDeltaX();
-				YOld = YNew - move.GetDeltaY();
-			}
+		public PlayerModel() : this(new Coordinates(0, 0)) {}
+
+		public PlayerModel(Coordinates initialPosition) {
+			CurPosition = initialPosition;
+			Inertia = new Coordinates(0, 0);
 		}
 
-		public int XPos { get; set; }
-		public int YPos { get; set; }
-
-		public PlayerMovementModel Update(MoveModel move) {
-			XPos += move.GetDeltaX();
-			YPos += move.GetDeltaY();
-
-			return new PlayerMovementModel(this, move);
+		public void Update(MoveModel move) {
+			Inertia = new Coordinates(Inertia.X + move.GetDeltaX(), Inertia.Y + move.GetDeltaY());
+			PrevPosition = (Coordinates) CurPosition.Clone();
+			CurPosition.MoveBy(Inertia);
 		}
 	}
 }
