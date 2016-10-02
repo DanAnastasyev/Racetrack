@@ -30,11 +30,14 @@
 	$(function() {
 		var game = $.connection.gameHub;
 
-		game.client.showMovements = function(name, x, y) {
-			// Html encode display name and message.
+		game.client.showMovements = function(round, name, playerMovement) {
 			var encodedName = $('<div />').text(name).html();
-			// Add the message to the page.
-			$('#discussion').append('<li><strong>' + encodedName + '</strong>:&nbsp;&nbsp;' + x + ' '+ y + '</li>');
+			$('#discussion').append('<li><strong>' + round + ': ' + name +
+                '</strong> Moved from (' + playerMovement.XOld + ', ' + playerMovement.YOld +
+                ') to (' + playerMovement.XNew + ', ' + playerMovement.YNew + ')</li>');
+		};
+		game.client.beginNextRound = function() {
+			document.getElementById('sendmessage').disabled = false;
 		};
 		$('#message').focus();
 		$.connection.hub.start().done(function() {
@@ -43,7 +46,8 @@
 							key: $('#message').val()
 						});
 						$('#message').val('').focus();
-					});
+						document.getElementById('sendmessage').disabled = true;
+				});
 			});
 	});
 </script>

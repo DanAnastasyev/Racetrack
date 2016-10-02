@@ -14,9 +14,16 @@ namespace Racetrack.Server.Hubs {
 		}
 
 		public void UpdatePlayer(MoveModel move) {
-			_game.UpdatePlayer(Context.ConnectionId, move);
+			PlayerModel.PlayerMovementModel playerMovement = 
+				_game.UpdatePlayer(Context.ConnectionId, move);
 
-			Clients.All.showMovements(Context.ConnectionId, move.GetDeltaX(), move.GetDeltaY());
+			Clients.All.showMovements(_game.RoundNumber, 
+				Context.ConnectionId, playerMovement);
+
+			if (_game.IsEndOfRound()) {
+				Clients.All.beginNextRound();
+				_game.BeginNextRound();
+			}
 		}
 
 		#region Connection lifecycle
