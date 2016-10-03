@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using Racetrack.Server.Models;
 
 namespace Racetrack.Server {
@@ -8,6 +9,7 @@ namespace Racetrack.Server {
 		private static readonly Lazy<Game> _instance = new Lazy<Game>(() => new Game());
 		private readonly Dictionary<string, PlayerModel> _players;
 		private int _movesCount; // число игроков, походивших в данном раунде
+		private readonly WorldModel _world;
 
 		public int RoundNumber { get; private set; } // номер текущего раунда
 
@@ -17,6 +19,7 @@ namespace Racetrack.Server {
 			_players = new Dictionary<string, PlayerModel>();
 			_movesCount = 0;
 			RoundNumber = 0;
+			_world = new WorldModel(System.Web.HttpContext.Current.Server.MapPath("~/Resources/map.txt"));
 		}
 
 		public void AddPlayer(string playerId) {
