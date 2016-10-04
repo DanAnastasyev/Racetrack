@@ -120,6 +120,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\Game.cs" />
     <Compile Include="Server\Hubs\GameHub.cs" />
+    <Compile Include="Server\Hubs\IGameUpdatesHandler.cs" />
     <Compile Include="Server\Models\Coordinates.cs" />
     <Compile Include="Server\Models\MoveModel.cs" />
     <Compile Include="Server\Models\PlayerModel.cs" />

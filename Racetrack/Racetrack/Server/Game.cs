@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Versioning;
+using Racetrack.Server.Hubs;
 using Racetrack.Server.Models;
 
 namespace Racetrack.Server {
@@ -26,20 +26,30 @@ namespace Racetrack.Server {
 			if (_players.ContainsKey(playerId)) {
 				return;
 			}
-			_players.Add(playerId, new PlayerModel());
+			_players.Add(playerId, new PlayerModel(new Coordinates(16, 2)));
 		}
 
 		public void DeletePlayer(string playerId) {
 			_players.Remove(playerId);
 		}
 
-		public void UpdatePlayer(string playerId, MoveModel move) {
+		public void UpdatePlayer(string playerId, MoveModel move, IGameUpdatesHandler handler) {
 			if (!_players.ContainsKey(playerId)) {
 				// TODO: Handling error?
 				return;
 			}
-			_players[playerId].Update(move);
+			_players[playerId].Move(move);
 			++_movesCount;
+			if (_world.CheckPosition(_players[playerId].CurPosition)) {
+				handler.ShowMovements(playerId);
+			} else {
+				handler.CrashCar(playerId);
+			}
+			if (_movesCount == _players.Count) {
+				handler.UpdateRound(playerId);
+				_movesCount = 0;
+				++RoundNumber;
+			}
 		}
 
 		public PlayerModel GetPlayer(string playerId) {
@@ -49,16 +59,7 @@ namespace Racetrack.Server {
 			}
 			return _players[playerId];
 		}
-
-		public bool IsEndOfRound() {
-			return _movesCount == _players.Count;
-		}
-
-		public void BeginNextRound() {
-			_movesCount = 0;
-			++RoundNumber;
-		}
-
+		
 		public WorldModel GetWorldModel() {
 			return _world;
 		}

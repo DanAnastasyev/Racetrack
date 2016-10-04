@@ -34,7 +34,6 @@
 			var width = worldModel.Width;
 			var height = worldModel.Height;
 			var map = worldModel.Map;
-			console.log(map);
 			for (var i = 0; i < height; ++i) {
 				$('#discussion').append('<br>');
 				for (var j = 0; j < width; ++j) {
@@ -49,19 +48,31 @@
 				'</strong> Moved from (' + prevPos.X + ', ' + prevPos.Y +
 				') to (' + curPos.X + ', ' + curPos.Y + ')</li>');
 		};
-		game.client.beginNextRound = function() {
-			document.getElementById('sendmessage').disabled = false;
+		var isCrashed = false;
+		game.client.crashMyCar = function(round, name) {
+			$('#discussion').append('<li><strong>' + round + ': ' + name +
+				'</strong> Crashed</li>');
+			isCrashed = true;
+		};
+		game.client.crashOtherCar = function (round, name) {
+			$('#discussion').append('<li><strong>' + round + ': ' + name +
+				'</strong> Crashed</li>');
+		};
+		game.client.beginNextRound = function () {
+			if (!isCrashed) {
+				document.getElementById('sendmessage').disabled = false;
+			}
 		};
 		$('#message').focus();
 		$.connection.hub.start().done(function() {
-				$('#sendmessage').click(function() {
-						game.server.updatePlayer({
-							key: $('#message').val()
-						});
-						$('#message').val('').focus();
-						document.getElementById('sendmessage').disabled = true;
+			$('#sendmessage').click(function() {
+				game.server.updatePlayer({
+					key: $('#message').val()
 				});
+				$('#message').val('').focus();
+				document.getElementById('sendmessage').disabled = true;
 			});
+		});
 	});
 </script>
 </body>

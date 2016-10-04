@@ -26,7 +26,6 @@ namespace Racetrack.Server.Models {
 				Width = int.Parse(fields[1]);
 
 				Map = new List<List<int>>(Height);
-
 				for (var i = 0; i < Height; ++i) {
 					line = reader.ReadLine();
 					if (line == null) {
@@ -61,7 +60,11 @@ namespace Racetrack.Server.Models {
 
 		// Можно ли стоять на позиции coord
 		public bool CheckPosition(Coordinates coord) {
-			return Map[coord.X][coord.Y] == 0;
+			if (!(coord.X >= 0 && coord.Y <= Width
+				&& coord.Y >= 0 && coord.Y <= Height)) {
+				return false;
+			}
+			return Map[coord.X][coord.Y] != 1;
 		}
 	}
 }

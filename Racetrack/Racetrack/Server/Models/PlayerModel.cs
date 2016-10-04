@@ -13,7 +13,7 @@ namespace Racetrack.Server.Models {
 			Inertia = new Coordinates(0, 0);
 		}
 
-		public void Update(MoveModel move) {
+		public void Move(MoveModel move) {
 			Inertia = new Coordinates(Inertia.X + move.GetDeltaX(), Inertia.Y + move.GetDeltaY());
 			PrevPosition = (Coordinates) CurPosition.Clone();
 			CurPosition.MoveBy(Inertia);

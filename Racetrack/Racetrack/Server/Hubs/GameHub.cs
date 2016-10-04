@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Racetrack.Server.Models;
 
 namespace Racetrack.Server.Hubs {
-	public class GameHub : Hub {
+	public class GameHub : Hub, IGameUpdatesHandler {
 		private readonly Game _game;
 
 		public GameHub() : this(Game.Instance) {}
@@ -14,17 +13,7 @@ namespace Racetrack.Server.Hubs {
 		}
 
 		public void UpdatePlayer(MoveModel move) {
-			_game.UpdatePlayer(Context.ConnectionId, move);
-
-			var player = _game.GetPlayer(Context.ConnectionId);
-
-			Clients.All.showMovements(_game.RoundNumber, Context.ConnectionId, 
-				player?.PrevPosition, player?.CurPosition);
-
-			if (_game.IsEndOfRound()) {
-				Clients.All.beginNextRound();
-				_game.BeginNextRound();
-			}
+			_game.UpdatePlayer(Context.ConnectionId, move, this);
 		}
 
 		#region Connection lifecycle
@@ -46,6 +35,26 @@ namespace Racetrack.Server.Hubs {
 			// user as offline after a period of inactivity; in that case 
 			// mark the user as online again.
 			return base.OnReconnected();
+		}
+
+		#endregion
+
+		#region GameUpdatesHandler
+
+		public void CrashCar(string playerId) {
+			Clients.Caller.crashMyCar(_game.RoundNumber, playerId);
+			Clients.Others.crashOtherCar(_game.RoundNumber, playerId);
+		}
+
+		public void UpdateRound(string playerId) {
+			var player = _game.GetPlayer(playerId);
+
+			Clients.All.showMovements(_game.RoundNumber, playerId,
+				player?.PrevPosition, player?.CurPosition);
+		}
+
+		public void ShowMovements(string playerId) {
+			Clients.All.beginNextRound();
 		}
 
 		#endregion
