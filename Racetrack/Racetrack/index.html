@@ -30,10 +30,24 @@
 	$(function() {
 		var game = $.connection.gameHub;
 
+		game.client.showMap = function (worldModel) {
+			var width = worldModel.Width;
+			var height = worldModel.Height;
+			var map = worldModel.Map;
+			console.log(map);
+			for (var i = 0; i < height; ++i) {
+				$('#discussion').append('<br>');
+				for (var j = 0; j < width; ++j) {
+					$('#discussion').append(map[i][j] + ' ');
+				}
+				$('#discussion').append('</br>');
+			}
+		};
+
 		game.client.showMovements = function(round, name, prevPos, curPos) {
 			$('#discussion').append('<li><strong>' + round + ': ' + name +
-                '</strong> Moved from (' + prevPos.X + ', ' + prevPos.Y +
-                ') to (' + curPos.X + ', ' + curPos.Y + ')</li>');
+				'</strong> Moved from (' + prevPos.X + ', ' + prevPos.Y +
+				') to (' + curPos.X + ', ' + curPos.Y + ')</li>');
 		};
 		game.client.beginNextRound = function() {
 			document.getElementById('sendmessage').disabled = false;

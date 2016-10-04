@@ -31,6 +31,7 @@ namespace Racetrack.Server.Hubs {
 
 		public override Task OnConnected() {
 			_game.AddPlayer(Context.ConnectionId);
+			Clients.Caller.showMap(_game.GetWorldModel());
 			return base.OnConnected();
 		}
 

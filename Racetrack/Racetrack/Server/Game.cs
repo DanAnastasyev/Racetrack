@@ -58,5 +58,9 @@ namespace Racetrack.Server {
 			_movesCount = 0;
 			++RoundNumber;
 		}
+
+		public WorldModel GetWorldModel() {
+			return _world;
+		}
 	}
 }
