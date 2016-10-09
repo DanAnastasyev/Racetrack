@@ -17,8 +17,6 @@ namespace Racetrack.Server {
 
 		public Game() {
 			_players = new Dictionary<string, PlayerModel>();
-			_movesCount = 0;
-			RoundNumber = 0;
 			_world = new WorldModel(System.Web.HttpContext.Current.Server.MapPath("~/Resources/map.txt"));
 		}
 
@@ -38,13 +36,24 @@ namespace Racetrack.Server {
 				// TODO: Handling error?
 				return;
 			}
-			_players[playerId].Move(move);
+			PlayerModel player = _players[playerId];
+			player.Move(move);
 			++_movesCount;
-			if (_world.CheckPosition(_players[playerId].CurPosition)) {
+			if (!_world.IsMovementOutOfTrack(player.GetLastMovement())) {
 				handler.ShowMovements(playerId);
 			} else {
+				player.IsAlive = false;
 				handler.CrashCar(playerId);
 			}
+
+			var intersectedWayPoint = _world.FindIntersectedWayPoints(player.GetLastMovement());
+			foreach (var pointNumber in intersectedWayPoint) {
+				if (pointNumber > player.LastWayPoint
+				    || player.LastWayPoint == _world.WayPointsCount() - 1 && pointNumber == 0) {
+					player.LastWayPoint = pointNumber;
+				}
+			}
+
 			if (_movesCount == _players.Count) {
 				handler.UpdateRound(playerId);
 				_movesCount = 0;

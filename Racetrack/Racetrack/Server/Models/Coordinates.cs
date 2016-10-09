@@ -25,4 +25,18 @@ namespace Racetrack.Server.Models {
 			return new Coordinates(X, Y);
 		}
 	}
+
+	public class Line : ICloneable {
+		public Coordinates First { get; private set; }
+		public Coordinates Second { get; private set; }
+
+		public Line(Coordinates first, Coordinates second) {
+			First = first;
+			Second = second;
+		}
+
+		public object Clone() {
+			return new Line(First, Second);
+		}
+	}
 }
