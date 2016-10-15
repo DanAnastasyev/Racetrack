@@ -11,3 +11,20 @@
   height: 100%;
   overflow: hidden;
 }
+
+#point-green {
+  position: relative;
+  left: 16px; top: 16px;
+  margin: 16px;
+  width: 128px;
+  height: 128px;
+  overflow: hidden;
+}
+
+#point-blue {    
+  position: relative;
+  left: 160px; top: 160px;
+  margin: 16px;
+  width: 128px;
+  height: 128px;
+}
