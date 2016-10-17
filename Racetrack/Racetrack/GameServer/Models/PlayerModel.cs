@@ -12,6 +12,7 @@
 			PrevPosition = initialPosition;
 			Inertia = new Coordinates(0, 0);
 			IsAlive = true;
+			LastWayPoint = -1; // Инициализируем -1, чтобы нужно было проехать по всем точкам
 		}
 
 		public void Move(MoveModel move) {

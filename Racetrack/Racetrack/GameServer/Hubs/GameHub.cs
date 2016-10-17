@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Racetrack.GameServer.Models;
-using Racetrack.Server.Hubs;
 
 namespace Racetrack.GameServer.Hubs {
 	public class GameHub : Hub, IGameUpdatesHandler {
@@ -21,12 +20,12 @@ namespace Racetrack.GameServer.Hubs {
 
 		public override Task OnConnected() {
 			_game.AddPlayer(Context.ConnectionId);
-			Clients.Caller.showMap(_game.GetWorldModel());
+			Clients.All.showMap(_game.GetWorldModel());
 			return base.OnConnected();
 		}
 
 		public override Task OnDisconnected(bool stopCalled) {
-			_game.DeletePlayer(Context.ConnectionId);
+			_game.DeletePlayer(Context.ConnectionId, this);
 			return base.OnDisconnected(stopCalled);
 		}
 
@@ -48,14 +47,23 @@ namespace Racetrack.GameServer.Hubs {
 		}
 
 		public void UpdateRound(string playerId) {
+			Clients.All.beginNextRound();
+		}
+
+		public void ShowMovements(string playerId) {
 			var player = _game.GetPlayer(playerId);
 
 			Clients.All.showMovements(_game.RoundNumber, playerId,
 				player?.PrevPosition, player?.CurPosition);
 		}
 
-		public void ShowMovements(string playerId) {
-			Clients.All.beginNextRound();
+		public void ShowEndOfGame(string playerId) {
+			Clients.Caller.showEndOfGame(true);
+			Clients.Others.showEndOfGame(false);
+		}
+
+		public void DeletePlayer(string playerId) {
+			Clients.Others.showMap(_game.GetWorldModel());
 		}
 
 		#endregion

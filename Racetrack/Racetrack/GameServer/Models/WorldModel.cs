@@ -58,8 +58,8 @@ namespace Racetrack.GameServer.Models {
 
 					fields = line.Split(' ');
 					_wayPoints.Add(new Line(
-						new Coordinates(int.Parse(fields[0]), int.Parse(fields[1])),
-						new Coordinates(int.Parse(fields[2]), int.Parse(fields[3]))));
+						new Coordinates(int.Parse(fields[1]), int.Parse(fields[0])),
+						new Coordinates(int.Parse(fields[3]), int.Parse(fields[2]))));
 				}
 			}
 		}

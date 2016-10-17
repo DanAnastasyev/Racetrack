@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Racetrack.GameServer.Models;
-using Racetrack.Server.Hubs;
 
 namespace Racetrack.GameServer {
 	// Инстанс игры
@@ -29,8 +28,49 @@ namespace Racetrack.GameServer {
 			_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 2;
 		}
 
-		public void DeletePlayer(string playerId) {
+		public void DeletePlayer(string playerId, IGameUpdatesHandler handler) {
+			if (!_players.ContainsKey(playerId)) {
+				// TODO: handle error
+				return;
+			}
+			_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 0;
 			_players.Remove(playerId);
+			handler.DeletePlayer(playerId);
+		}
+
+		private void PerformMovement(PlayerModel player, string playerId, 
+				MoveModel move, IGameUpdatesHandler handler) {
+			player.Move(move);
+			++_movesCount;
+			if (!_world.IsMovementOutOfTrack(player.GetLastMovement())) {
+				handler.ShowMovements(playerId);
+			} else {
+				handler.ShowMovements(playerId);
+				handler.CrashCar(playerId);
+				DeletePlayer(playerId, handler);
+			}
+		}
+
+		private void CheckIntersections(PlayerModel player, string playerId, IGameUpdatesHandler handler) {
+			var intersectedWayPoint = _world.FindIntersectedWayPoints(player.GetLastMovement());
+			foreach (var pointNumber in intersectedWayPoint) {
+				if (pointNumber == player.LastWayPoint + 1) {
+					player.LastWayPoint = pointNumber;
+				}
+			}
+			// Конец игры == игрок пересек последний вэйпоинт
+			if (player.LastWayPoint == _world.WayPointsCount() - 1) {
+				handler.ShowEndOfGame(playerId);
+			}
+		}
+
+		private void UpdateRound(string playerId, IGameUpdatesHandler handler) {
+			if (_movesCount != _players.Count) {
+				return;
+			}
+			handler.UpdateRound(playerId);
+			_movesCount = 0;
+			++RoundNumber;
 		}
 
 		public void UpdatePlayer(string playerId, MoveModel move, IGameUpdatesHandler handler) {
@@ -38,29 +78,11 @@ namespace Racetrack.GameServer {
 				// TODO: Handling error?
 				return;
 			}
-			PlayerModel player = _players[playerId];
-			player.Move(move);
-			++_movesCount;
-			if (!_world.IsMovementOutOfTrack(player.GetLastMovement())) {
-				handler.ShowMovements(playerId);
-			} else {
-				player.IsAlive = false;
-				handler.CrashCar(playerId);
-			}
+			var player = _players[playerId];
+			PerformMovement(player, playerId, move, handler);
+			CheckIntersections(player, playerId, handler);
 
-			var intersectedWayPoint = _world.FindIntersectedWayPoints(player.GetLastMovement());
-			foreach (var pointNumber in intersectedWayPoint) {
-				if (pointNumber > player.LastWayPoint
-					|| player.LastWayPoint == _world.WayPointsCount() - 1 && pointNumber == 0) {
-					player.LastWayPoint = pointNumber;
-				}
-			}
-
-			if (_movesCount == _players.Count) {
-				handler.UpdateRound(playerId);
-				_movesCount = 0;
-				++RoundNumber;
-			}
+			UpdateRound(playerId, handler);
 		}
 
 		public PlayerModel GetPlayer(string playerId) {
