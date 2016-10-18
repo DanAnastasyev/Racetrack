@@ -181,7 +181,10 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="GameServer\Game.cs" />
+    <Compile Include="GameServer\GamesManager.cs" />
+    <Compile Include="GameServer\Hubs\ConnectionHub.cs" />
     <Compile Include="GameServer\Hubs\GameHub.cs" />
+    <Compile Include="GameServer\IGamesManagerCallbacks.cs" />
     <Compile Include="GameServer\IGameUpdatesHandler.cs" />
     <Compile Include="GameServer\Models\Coordinates.cs" />
     <Compile Include="GameServer\Models\MoveModel.cs" />
@@ -246,7 +249,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -269,6 +271,7 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <None Include="Views\Game\Index.cshtml" />
+    <Content Include="Views\Game\WaitForConnection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

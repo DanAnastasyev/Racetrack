@@ -1,12 +1,5 @@
 ﻿namespace Racetrack.GameServer.Models {
 	public class PlayerModel {
-		public Coordinates CurPosition { get; private set; }
-		public Coordinates PrevPosition { get; private set; }
-		public Coordinates Inertia { get; private set; }
-		public int CurLap { get; set; }
-		public bool IsAlive { get; set; }
-		public int LastWayPoint { get; set; }
-
 		public PlayerModel(Coordinates initialPosition) {
 			CurPosition = initialPosition;
 			PrevPosition = initialPosition;
@@ -15,9 +8,16 @@
 			LastWayPoint = -1; // Инициализируем -1, чтобы нужно было проехать по всем точкам
 		}
 
+		public Coordinates CurPosition { get; }
+		public Coordinates PrevPosition { get; private set; }
+		public Coordinates Inertia { get; private set; }
+		public int CurLap { get; set; }
+		public bool IsAlive { get; set; }
+		public int LastWayPoint { get; set; }
+
 		public void Move(MoveModel move) {
 			Inertia = new Coordinates(Inertia.X + move.GetDeltaX(), Inertia.Y + move.GetDeltaY());
-			PrevPosition = (Coordinates)CurPosition.Clone();
+			PrevPosition = (Coordinates) CurPosition.Clone();
 			CurPosition.MoveBy(Inertia);
 		}
 
