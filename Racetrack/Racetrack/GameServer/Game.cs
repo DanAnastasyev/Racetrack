@@ -21,15 +21,17 @@ namespace Racetrack.GameServer {
 		public static Game Instance => _instance.Value;
 
 		public void AddPlayer(string playerId) {
-			if (_players.ContainsKey(playerId))
+			if (_players.ContainsKey(playerId)) {
 				return;
+			}
 			_players.Add(playerId, new PlayerModel(GetNextAvailablePlayerPosition()));
 			_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 2;
 		}
 
 		public void DeletePlayer(string playerId, IGameUpdatesHandler handler) {
-			if (!_players.ContainsKey(playerId))
+			if (!_players.ContainsKey(playerId)) {
 				return;
+			}
 			_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 0;
 			_players.Remove(playerId);
 			handler.DeletePlayer(playerId);
@@ -50,25 +52,30 @@ namespace Racetrack.GameServer {
 
 		private void CheckIntersections(PlayerModel player, string playerId, IGameUpdatesHandler handler) {
 			var intersectedWayPoint = _world.FindIntersectedWayPoints(player.GetLastMovement());
-			foreach (var pointNumber in intersectedWayPoint)
-				if (pointNumber == player.LastWayPoint + 1)
+			foreach (var pointNumber in intersectedWayPoint) {
+				if (pointNumber == player.LastWayPoint + 1) {
 					player.LastWayPoint = pointNumber;
+				}
+			}
 			// Конец игры == игрок пересек последний вэйпоинт
-			if (player.LastWayPoint == _world.WayPointsCount() - 1)
+			if (player.LastWayPoint == _world.WayPointsCount() - 1) {
 				handler.ShowEndOfGame(playerId);
+			}
 		}
 
 		private void UpdateRound(string playerId, IGameUpdatesHandler handler) {
-			if (_movesCount != _players.Count)
+			if (_movesCount != _players.Count) {
 				return;
+			}
 			handler.UpdateRound(playerId);
 			_movesCount = 0;
 			++RoundNumber;
 		}
 
 		public void UpdatePlayer(string playerId, MoveModel move, IGameUpdatesHandler handler) {
-			if (!_players.ContainsKey(playerId))
+			if (!_players.ContainsKey(playerId)) {
 				return;
+			}
 			var player = _players[playerId];
 			PerformMovement(player, playerId, move, handler);
 			CheckIntersections(player, playerId, handler);
@@ -81,8 +88,9 @@ namespace Racetrack.GameServer {
 		}
 
 		public PlayerModel GetPlayer(string playerId) {
-			if (!_players.ContainsKey(playerId))
+			if (!_players.ContainsKey(playerId)) {
 				return null;
+			}
 			return _players[playerId];
 		}
 

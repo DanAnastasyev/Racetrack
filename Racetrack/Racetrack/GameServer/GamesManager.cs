@@ -8,7 +8,7 @@ namespace Racetrack.GameServer {
 		private readonly List<Game> _games;
 		private readonly Dictionary<string, Game> _players;
 		private IGamesManagerCallbacks _handler;
-		private List<string> _playersQueue;
+		private readonly List<string> _playersQueue;
 
 		public GamesManager() {
 			_games = new List<Game>();
@@ -24,8 +24,8 @@ namespace Racetrack.GameServer {
 		public void OnNewPlayerConnection(string playerId, IGamesManagerCallbacks handler) {
 			_playersQueue.Add(playerId);
 			if (_playersQueue.Count > 1) {
-				List<string> joinPlayersList = new List<string>();
-				for (int i = 0; i < 2; ++i) {
+				var joinPlayersList = new List<string>();
+				for (var i = 0; i < 2; ++i) {
 					joinPlayersList.Add(_playersQueue[i]);
 				}
 				_playersQueue.RemoveRange(0, 2);

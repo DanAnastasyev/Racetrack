@@ -28,8 +28,9 @@ namespace Racetrack.GameServer.Models {
 			// TODO: errors handling
 			using (var reader = new StreamReader(mapPath)) {
 				var line = reader.ReadLine();
-				if (line == null)
+				if (line == null) {
 					throw new ArgumentException();
+				}
 
 				var fields = line.Split(' ');
 				Height = int.Parse(fields[0]);
@@ -39,8 +40,9 @@ namespace Racetrack.GameServer.Models {
 				PlayersStartPositions = new List<Coordinates>();
 				for (var i = 0; i < Height; ++i) {
 					line = reader.ReadLine();
-					if (line == null)
+					if (line == null) {
 						break;
+					}
 
 					fields = line.Split(' ');
 					Map.Add(new List<int>(Width));
@@ -58,8 +60,9 @@ namespace Racetrack.GameServer.Models {
 				_wayPoints = new List<Line>();
 				while (true) {
 					line = reader.ReadLine();
-					if (line == null)
+					if (line == null) {
 						break;
+					}
 
 					fields = line.Split(' ');
 					_wayPoints.Add(new Line(
@@ -105,8 +108,9 @@ namespace Racetrack.GameServer.Models {
 			if ((Area(secondLine.First, firstLine.Second, secondLine.Second)
 			     *Area(secondLine.First, normalVectorCoordinates, secondLine.Second) >= 0)
 			    && (Area(secondLine.First, firstLine.First, secondLine.Second)
-			        *Area(secondLine.First, normalVectorCoordinates, secondLine.Second) < 0))
+			        *Area(secondLine.First, normalVectorCoordinates, secondLine.Second) < 0)) {
 				return true;
+			}
 			return false;
 		}
 
@@ -119,8 +123,9 @@ namespace Racetrack.GameServer.Models {
 			if ((movement.Second.X < 0) ||
 			    (movement.Second.Y < 0) ||
 			    (movement.Second.X >= Width) ||
-			    (movement.Second.Y >= Height))
+			    (movement.Second.Y >= Height)) {
 				return true;
+			}
 
 			// Было ли пересечение границ трека
 			var playersPreviousCoordinates = movement.First;
@@ -135,10 +140,11 @@ namespace Racetrack.GameServer.Models {
 			var realPreviousCoordinates = new Coordinates(playersPreviousCoordinates.X*10 + 5,
 				playersPreviousCoordinates.Y*10 + 5);
 
-			for (var i = minX; i <= maxX; ++i)
+			for (var i = minX; i <= maxX; ++i) {
 				for (var j = minY; j <= maxY; ++j) {
-					if (IsEmptyPosition(i, j))
+					if (IsEmptyPosition(i, j)) {
 						continue;
+					}
 					var firstPoint = new Coordinates(i*10, j*10);
 					var secondPoint = new Coordinates((i + 1)*10, j*10);
 					var thirdPoint = new Coordinates((i + 1)*10, (j + 1)*10);
@@ -147,18 +153,22 @@ namespace Racetrack.GameServer.Models {
 					if (IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(firstPoint, secondPoint))
 					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(secondPoint, thirdPoint))
 					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(thirdPoint, fourthPoint))
-					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(fourthPoint, firstPoint)))
+					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(fourthPoint, firstPoint))) {
 						return true;
+					}
 				}
+			}
 			return false;
 		}
 
 		// Возвращает список пересеченных waypoint'ов
 		public List<int> FindIntersectedWayPoints(Line movement) {
 			var intersectedWayPoints = new List<int>();
-			for (var i = 0; i < _wayPoints.Count; ++i)
-				if (IsIntersects(movement, _wayPoints[i]))
+			for (var i = 0; i < _wayPoints.Count; ++i) {
+				if (IsIntersects(movement, _wayPoints[i])) {
 					intersectedWayPoints.Add(i);
+				}
+			}
 			return intersectedWayPoints;
 		}
 

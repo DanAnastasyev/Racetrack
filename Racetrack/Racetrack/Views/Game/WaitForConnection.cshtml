@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "WaitForConnection";
+	ViewBag.Title = "WaitForConnection";
 }
 
 <h2 id="message">Wait for connection...</h2>
@@ -15,12 +15,11 @@
 	<script src="~/signalr/hubs"></script>
 	<!--Add script to update the page and send messages.-->
 	<script type="text/javascript">
-		$(function () {
+		$(function() {
 			var connectionHub = $.connection.connectionHub;
-			connectionHub.client.showBtn = function () {
+			connectionHub.client.showBtn = function() {
 				$("#joinBtn").show();
-			}
-
+			};
 			$.connection.hub.start();
 		});
 	</script>
