@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -43,26 +45,24 @@ namespace Racetrack.Controllers {
 		[HttpPost]
 		[AllowAnonymous]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Login(LoginViewModel model, string returnUrl) {
+		public ActionResult Login(GuestViewModel model, string returnUrl) {
 			if (!ModelState.IsValid) {
 				return View(model);
 			}
+			
+			var identity = new ClaimsIdentity(new[] {
+						new Claim(ClaimTypes.Name, model.Name),
+					},
+				DefaultAuthenticationTypes.ApplicationCookie,
+				ClaimTypes.Name, ClaimTypes.Role);
 
-			// This doesn't count login failures towards account lockout
-			// To enable password failures to trigger account lockout, change to shouldLockout: true
-			var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-			switch (result) {
-				case SignInStatus.Success:
-					return RedirectToLocal(returnUrl);
-				case SignInStatus.LockedOut:
-					return View("Lockout");
-				case SignInStatus.RequiresVerification:
-					return RedirectToAction("SendCode", new {ReturnUrl = returnUrl, model.RememberMe});
-				case SignInStatus.Failure:
-				default:
-					ModelState.AddModelError("", "Invalid login attempt.");
-					return View(model);
-			}
+			identity.AddClaim(new Claim(ClaimTypes.Role, "guest"));
+			
+			AuthenticationManager.SignIn(new AuthenticationProperties {
+				IsPersistent = true
+			}, identity);
+
+			return RedirectToLocal(returnUrl);
 		}
 
 		//

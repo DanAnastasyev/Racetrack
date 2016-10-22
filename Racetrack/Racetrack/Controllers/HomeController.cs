@@ -1,4 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.AspNet.Identity.Owin;
+using Racetrack.Models;
 
 namespace Racetrack.Controllers {
 	public class HomeController : Controller {

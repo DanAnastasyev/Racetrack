@@ -87,17 +87,17 @@ namespace Racetrack.GameServer.Models {
 		}
 
 		private int Area(Coordinates firstPoint, Coordinates secondPoint, Coordinates thirdPoint) {
-			return (secondPoint.X - firstPoint.X)*(thirdPoint.Y - firstPoint.Y)
-			       - (secondPoint.Y - firstPoint.Y)*(thirdPoint.X - firstPoint.X);
+			return (secondPoint.X - firstPoint.X) * (thirdPoint.Y - firstPoint.Y)
+			       - (secondPoint.Y - firstPoint.Y) * (thirdPoint.X - firstPoint.X);
 		}
 
 		private bool IsIntersects(Line firstLine, Line secondLine) {
 			return IsInBoxOnAxis(firstLine.First.X, firstLine.Second.X, secondLine.First.X, secondLine.Second.X)
 			       && IsInBoxOnAxis(firstLine.First.Y, firstLine.Second.Y, secondLine.First.Y, secondLine.Second.Y)
 			       && (Area(firstLine.First, firstLine.Second, secondLine.First)
-			           *Area(firstLine.First, firstLine.Second, secondLine.Second) <= 0)
+			           * Area(firstLine.First, firstLine.Second, secondLine.Second) <= 0)
 			       && (Area(secondLine.First, secondLine.Second, firstLine.First)
-			           *Area(secondLine.First, secondLine.Second, firstLine.Second) <= 0);
+			           * Area(secondLine.First, secondLine.Second, firstLine.Second) <= 0);
 		}
 
 		// Пересекается ли линия secondLine в нужную сторону
@@ -106,9 +106,9 @@ namespace Racetrack.GameServer.Models {
 			var normalVectorCoordinates = new Coordinates(secondLine.Second.X - secondLine.First.X,
 				secondLine.Second.Y - secondLine.First.Y);
 			if ((Area(secondLine.First, firstLine.Second, secondLine.Second)
-			     *Area(secondLine.First, normalVectorCoordinates, secondLine.Second) >= 0)
+			     * Area(secondLine.First, normalVectorCoordinates, secondLine.Second) >= 0)
 			    && (Area(secondLine.First, firstLine.First, secondLine.Second)
-			        *Area(secondLine.First, normalVectorCoordinates, secondLine.Second) < 0)) {
+			        * Area(secondLine.First, normalVectorCoordinates, secondLine.Second) < 0)) {
 				return true;
 			}
 			return false;
@@ -136,24 +136,28 @@ namespace Racetrack.GameServer.Models {
 			var minY = Math.Min(playersPreviousCoordinates.Y, playersCoordinates.Y);
 			var maxY = Math.Max(playersPreviousCoordinates.Y, playersCoordinates.Y);
 
-			var realCoordinates = new Coordinates(playersCoordinates.X*10 + 5, playersCoordinates.Y*10 + 5);
-			var realPreviousCoordinates = new Coordinates(playersPreviousCoordinates.X*10 + 5,
-				playersPreviousCoordinates.Y*10 + 5);
+			var realCoordinates = new Coordinates(playersCoordinates.X * 10 + 5, playersCoordinates.Y * 10 + 5);
+			var realPreviousCoordinates = new Coordinates(playersPreviousCoordinates.X * 10 + 5,
+				playersPreviousCoordinates.Y * 10 + 5);
 
 			for (var i = minX; i <= maxX; ++i) {
 				for (var j = minY; j <= maxY; ++j) {
 					if (IsEmptyPosition(i, j)) {
 						continue;
 					}
-					var firstPoint = new Coordinates(i*10, j*10);
-					var secondPoint = new Coordinates((i + 1)*10, j*10);
-					var thirdPoint = new Coordinates((i + 1)*10, (j + 1)*10);
-					var fourthPoint = new Coordinates(i*10, (j + 1)*10);
+					var firstPoint = new Coordinates(i * 10, j * 10);
+					var secondPoint = new Coordinates((i + 1) * 10, j * 10);
+					var thirdPoint = new Coordinates((i + 1) * 10, (j + 1) * 10);
+					var fourthPoint = new Coordinates(i * 10, (j + 1) * 10);
 
-					if (IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(firstPoint, secondPoint))
-					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(secondPoint, thirdPoint))
-					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(thirdPoint, fourthPoint))
-					    || IsIntersects(new Line(realPreviousCoordinates, realCoordinates), new Line(fourthPoint, firstPoint))) {
+					if (IsIntersects(new Line(realPreviousCoordinates, realCoordinates), 
+										new Line(firstPoint, secondPoint))
+							|| IsIntersects(new Line(realPreviousCoordinates, realCoordinates), 
+											new Line(secondPoint, thirdPoint))
+							|| IsIntersects(new Line(realPreviousCoordinates, realCoordinates), 
+											new Line(thirdPoint, fourthPoint))
+							|| IsIntersects(new Line(realPreviousCoordinates, realCoordinates), 
+											new Line(fourthPoint, firstPoint))) {
 						return true;
 					}
 				}

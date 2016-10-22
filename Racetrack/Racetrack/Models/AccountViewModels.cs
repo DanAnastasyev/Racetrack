@@ -42,6 +42,12 @@ namespace Racetrack.Models {
 		public string Email { get; set; }
 	}
 
+	public class GuestViewModel {
+		[Required]
+		[Display(Name = "Name")]
+		public string Name { get; set; }
+	}
+
 	public class LoginViewModel {
 		[Required]
 		[Display(Name = "Email")]
@@ -64,7 +70,7 @@ namespace Racetrack.Models {
 		public string Email { get; set; }
 
 		[Required]
-		[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+		[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
 		[DataType(DataType.Password)]
 		[Display(Name = "Password")]
 		public string Password { get; set; }
@@ -83,7 +89,7 @@ namespace Racetrack.Models {
 		public string Email { get; set; }
 
 		[Required]
-		[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+		[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
 		[DataType(DataType.Password)]
 		[Display(Name = "Password")]
 		public string Password { get; set; }

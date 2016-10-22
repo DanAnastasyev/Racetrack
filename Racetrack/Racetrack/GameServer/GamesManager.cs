@@ -7,19 +7,18 @@ namespace Racetrack.GameServer {
 		private static readonly Lazy<GamesManager> _instance = new Lazy<GamesManager>(() => new GamesManager());
 		private readonly List<Game> _games;
 		private readonly Dictionary<string, Game> _players;
-		private IGamesManagerCallbacks _handler;
 		private readonly List<string> _playersQueue;
+		private IGamesManagerCallbacks _handler;
 
 		public GamesManager() {
 			_games = new List<Game>();
-			_games.Add(new Game());
 			_playersQueue = new List<string>();
 			_players = new Dictionary<string, Game>();
 		}
 
 		public static GamesManager Instance => _instance.Value;
 
-		public Game GetGame(string playerId) => _games[0];
+		public Game GetGame(string playerId) => _players[playerId];
 
 		public void OnNewPlayerConnection(string playerId, IGamesManagerCallbacks handler) {
 			_playersQueue.Add(playerId);
