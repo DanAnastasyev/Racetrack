@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
 
 namespace Racetrack.GameServer.Hubs {
@@ -21,14 +22,15 @@ namespace Racetrack.GameServer.Hubs {
 		#region Connection lifecycle
 
 		public override Task OnConnected() {
-			var playerId = Context.ConnectionId;
-			_gamesManager.OnNewPlayerConnection(playerId, this);
+			var userId = Context.User.Identity.GetUserId();
+			var connectionId = Context.ConnectionId;
+			_gamesManager.OnNewPlayerConnection(userId, connectionId, this);
 
 			return base.OnConnected();
 		}
 
 		public override Task OnDisconnected(bool stopCalled) {
-			var playerId = Context.ConnectionId;
+			var playerId = Context.User.Identity.GetUserId();
 
 			return base.OnDisconnected(stopCalled);
 		}

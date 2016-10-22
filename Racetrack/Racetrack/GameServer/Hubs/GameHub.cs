@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
 using Racetrack.GameServer.Models;
 
@@ -13,14 +14,15 @@ namespace Racetrack.GameServer.Hubs {
 		}
 
 		public void UpdatePlayer(MoveModel move) {
-			var game = _gameManager.GetGame(Context.ConnectionId);
-			game.UpdatePlayer(Context.ConnectionId, move, this);
+			var playerId = Context.User.Identity.GetUserId();
+			var game = _gameManager.GetGame(playerId);
+			game.UpdatePlayer(playerId, move, this);
 		}
 
 		#region Connection lifecycle
 
 		public override Task OnConnected() {
-			var playerId = Context.ConnectionId;
+			var playerId = Context.User.Identity.GetUserId();
 			var game = _gameManager.GetGame(playerId);
 			game.AddPlayer(playerId);
 			Clients.All.showMap(game.GetWorldModel());
@@ -28,7 +30,7 @@ namespace Racetrack.GameServer.Hubs {
 		}
 
 		public override Task OnDisconnected(bool stopCalled) {
-			var playerId = Context.ConnectionId;
+			var playerId = Context.User.Identity.GetUserId();
 			var game = _gameManager.GetGame(playerId);
 			game.DeletePlayer(playerId, this);
 			return base.OnDisconnected(stopCalled);
@@ -39,7 +41,7 @@ namespace Racetrack.GameServer.Hubs {
 		#region GameUpdatesHandler
 
 		public void CrashCar(string playerId) {
-			var game = _gameManager.GetGame(Context.ConnectionId);
+			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
 			Clients.Caller.crashMyCar(game.RoundNumber, playerId);
 			Clients.Others.crashOtherCar(game.RoundNumber, playerId);
 		}
@@ -49,7 +51,7 @@ namespace Racetrack.GameServer.Hubs {
 		}
 
 		public void ShowMovements(string playerId) {
-			var game = _gameManager.GetGame(Context.ConnectionId);
+			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
 			var player = game.GetPlayer(playerId);
 
 			Clients.All.showMovements(game.RoundNumber, playerId,
@@ -62,7 +64,7 @@ namespace Racetrack.GameServer.Hubs {
 		}
 
 		public void DeletePlayer(string playerId) {
-			var game = _gameManager.GetGame(Context.ConnectionId);
+			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
 			Clients.Others.showMap(game.GetWorldModel());
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Racetrack.GameServer;
 
 namespace Racetrack.Controllers {
 	public class GameController : Controller {
@@ -12,7 +13,6 @@ namespace Racetrack.Controllers {
 		}
 
 		public ActionResult WaitForConnection() {
-			string a = User.Identity.GetUserId();
 			if (!User.Identity.IsAuthenticated) {
 				return RedirectToAction("Login", "Account", new { ReturnUrl = Request.RawUrl });
 			}
