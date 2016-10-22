@@ -27,10 +27,10 @@ namespace Racetrack.GameServer {
 
 		public static GamesManager Instance => _instance.Value;
 
-		public Game GetGame(string playerId) => _players[playerId];
+		public Game GetGame(string userId) => _players[userId];
 
-		public void OnNewPlayerConnection(string playerId, string connectionId, IGamesManagerCallbacks handler) {
-			_playersQueue.Add(new UserConnection(playerId, connectionId));
+		public void AddPlayerToWaitingQueue(string userId, string connectionId, IGamesManagerCallbacks handler) {
+			_playersQueue.Add(new UserConnection(userId, connectionId));
 			if (_playersQueue.Count > 1) {
 				_games.Add(new Game());
 
@@ -43,6 +43,10 @@ namespace Racetrack.GameServer {
 
 				handler.JoinPlayers(connectionIds);
 			}
+		}
+
+		public string GetUserGroup(string userId) {
+			return "game_" + _games.IndexOf(_players[userId]);
 		}
 	}
 }

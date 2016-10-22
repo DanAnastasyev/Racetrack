@@ -21,19 +21,25 @@ namespace Racetrack.GameServer.Hubs {
 
 		#region Connection lifecycle
 
-		public override Task OnConnected() {
+		public override async Task OnConnected() {
 			var playerId = Context.User.Identity.GetUserId();
+			var gameId = _gameManager.GetUserGroup(playerId);
+
 			var game = _gameManager.GetGame(playerId);
 			game.AddPlayer(playerId);
-			Clients.All.showMap(game.GetWorldModel());
-			return base.OnConnected();
+
+			await Groups.Add(Context.ConnectionId, gameId);
+			Clients.Group(gameId).showMap(game.GetWorldModel());
+			await base.OnConnected();
 		}
 
-		public override Task OnDisconnected(bool stopCalled) {
+		public override async Task OnDisconnected(bool stopCalled) {
 			var playerId = Context.User.Identity.GetUserId();
 			var game = _gameManager.GetGame(playerId);
 			game.DeletePlayer(playerId, this);
-			return base.OnDisconnected(stopCalled);
+
+			await Groups.Remove(Context.ConnectionId, _gameManager.GetUserGroup(playerId));
+			await base.OnDisconnected(stopCalled);
 		}
 
 		#endregion
@@ -41,31 +47,36 @@ namespace Racetrack.GameServer.Hubs {
 		#region GameUpdatesHandler
 
 		public void CrashCar(string playerId) {
+			var gameId = _gameManager.GetUserGroup(playerId);
 			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
 			Clients.Caller.crashMyCar(game.RoundNumber, playerId);
-			Clients.Others.crashOtherCar(game.RoundNumber, playerId);
+			Clients.Group(gameId, playerId).crashOtherCar(game.RoundNumber, playerId);
 		}
 
 		public void UpdateRound(string playerId) {
-			Clients.All.beginNextRound();
+			var gameId = _gameManager.GetUserGroup(playerId);
+			Clients.Group(gameId).beginNextRound();
 		}
 
 		public void ShowMovements(string playerId) {
+			var gameId = _gameManager.GetUserGroup(playerId);
 			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
 			var player = game.GetPlayer(playerId);
 
-			Clients.All.showMovements(game.RoundNumber, playerId,
+			Clients.Group(gameId).showMovements(game.RoundNumber, playerId,
 				player?.PrevPosition, player?.CurPosition);
 		}
 
 		public void ShowEndOfGame(string playerId) {
+			var gameId = _gameManager.GetUserGroup(playerId);
 			Clients.Caller.showEndOfGame(true);
-			Clients.Others.showEndOfGame(false);
+			Clients.Group(gameId, playerId).showEndOfGame(false);
 		}
 
 		public void DeletePlayer(string playerId) {
+			var gameId = _gameManager.GetUserGroup(playerId);
 			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
-			Clients.Others.showMap(game.GetWorldModel());
+			Clients.Group(gameId, playerId).showMap(game.GetWorldModel());
 		}
 
 		#endregion

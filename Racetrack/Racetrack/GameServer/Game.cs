@@ -25,14 +25,20 @@ namespace Racetrack.GameServer {
 				return;
 			}
 			_players.Add(playerId, new PlayerModel(GetNextAvailablePlayerPosition()));
-			_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 2;
+			if (_world.IsValidPosition(_players[playerId].CurPosition.X, _players[playerId].CurPosition.Y)) {
+				_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 2;
+			} else {
+				throw new ArgumentException();
+			}
 		}
 
 		public void DeletePlayer(string playerId, IGameUpdatesHandler handler) {
 			if (!_players.ContainsKey(playerId)) {
 				return;
 			}
-			_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 0;
+			if (_world.IsValidPosition(_players[playerId].CurPosition.X, _players[playerId].CurPosition.Y)) {
+				_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 0;
+			}
 			_players.Remove(playerId);
 			handler.DeletePlayer(playerId);
 		}

@@ -24,7 +24,7 @@ namespace Racetrack.GameServer.Hubs {
 		public override Task OnConnected() {
 			var userId = Context.User.Identity.GetUserId();
 			var connectionId = Context.ConnectionId;
-			_gamesManager.OnNewPlayerConnection(userId, connectionId, this);
+			_gamesManager.AddPlayerToWaitingQueue(userId, connectionId, this);
 
 			return base.OnConnected();
 		}

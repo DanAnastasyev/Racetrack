@@ -72,7 +72,7 @@ namespace Racetrack.GameServer.Models {
 			}
 		}
 
-		private bool IsInBoxOnAxis(int firstPoint, int secondPoint, int thirdPoint, int forthPoint) {
+		private static bool IsInBoxOnAxis(int firstPoint, int secondPoint, int thirdPoint, int forthPoint) {
 			if (firstPoint > secondPoint) {
 				var tmp = firstPoint;
 				firstPoint = secondPoint;
@@ -114,8 +114,13 @@ namespace Racetrack.GameServer.Models {
 			return false;
 		}
 
+		public bool IsValidPosition(int x, int y) {
+			return 0 <= y && y < Map.Count
+			       && 0 <= x && x < Map[0].Count;
+		}
+
 		public bool IsEmptyPosition(int x, int y) {
-			return Map[y][x] != 1;
+			return IsValidPosition(x, y) && Map[y][x] != 1;
 		}
 
 		public bool IsMovementOutOfTrack(Line movement) {
