@@ -4,22 +4,18 @@
 }
 
 #arena {
-  background-image: url("arena-street.png");
-  background-size: 100% 100%;
+  background-image: url("street.png");
+  background-attachment: scroll;
+  background-color: #ffffff;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   margin: 0px;
   width: 100%;
   height: 100%;
   overflow: hidden;
+  text-align: center;
 }
-
-/*#arena-oval {
-  background-image: url("arena-oval.png");
-  background-size: 100% 100%;
-  margin: 0px;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}*/
 
 #point-green {
   position: relative;
