@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -45,28 +46,24 @@ namespace Racetrack.Controllers {
 		[HttpPost]
 		[AllowAnonymous]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Login(GuestViewModel model, string returnUrl) {
-			if (ModelState.IsValid) {
-				ApplicationUser user = await UserManager.FindByNameAsync(model.Name);
-				if (user != null) {
-					ClaimsIdentity claim = await UserManager.CreateIdentityAsync(user,
-						DefaultAuthenticationTypes.ApplicationCookie);
-					AuthenticationManager.SignOut();
-					AuthenticationManager.SignIn(new AuthenticationProperties {IsPersistent = true}, claim);
-
-					return RedirectToLocal(returnUrl);
-				} else {
-					user = new ApplicationUser { UserName = model.Name };
-					var result = await UserManager.CreateAsync(user);
-					if (result.Succeeded) {
-						await SignInManager.SignInAsync(user, true, true);
-
-						return RedirectToLocal(returnUrl);
-					}
-					AddErrors(result);
-				}
+		public ActionResult Login(GuestViewModel model, string returnUrl) {
+			if (!ModelState.IsValid) {
+				return View(model);
 			}
-			return View(model);
+			
+			var claims = new List<Claim>() {
+				new Claim(ClaimTypes.Name, model.Name),
+				new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())
+			};
+
+			var identity = new ClaimsIdentity(claims,
+				DefaultAuthenticationTypes.ApplicationCookie);
+			
+			AuthenticationManager.SignIn(new AuthenticationProperties {
+				IsPersistent = true
+			}, identity);
+
+			return RedirectToLocal(returnUrl);
 		}
 
 		//
