@@ -36,11 +36,8 @@ namespace Racetrack.GameServer {
 			if (!_players.ContainsKey(playerId)) {
 				return;
 			}
-			if (_world.IsValidPosition(_players[playerId].CurPosition.X, _players[playerId].CurPosition.Y)) {
-				_world.Map[_players[playerId].CurPosition.Y][_players[playerId].CurPosition.X] = 0;
-			}
 			_players.Remove(playerId);
-			handler.DeletePlayer(playerId);
+			//handler.OnDeletePlayer(playerId);
 		}
 
 		private void PerformMovement(PlayerModel player, string playerId,
@@ -48,15 +45,16 @@ namespace Racetrack.GameServer {
 			player.Move(move);
 			++_movesCount;
 			if (!_world.IsMovementOutOfTrack(player.GetLastMovement())) {
-				handler.ShowMovements(playerId);
+				handler.OnShowMovements(playerId);
+				CheckWayPointsIntersections(player, playerId, handler);
 			} else {
-				handler.ShowMovements(playerId);
-				handler.CrashCar(playerId);
+				handler.OnShowMovements(playerId);
+				handler.OnCarCrash(playerId);
 				DeletePlayer(playerId, handler);
 			}
 		}
 
-		private void CheckIntersections(PlayerModel player, string playerId, IGameUpdatesHandler handler) {
+		private void CheckWayPointsIntersections(PlayerModel player, string playerId, IGameUpdatesHandler handler) {
 			var intersectedWayPoint = _world.FindIntersectedWayPoints(player.GetLastMovement());
 			foreach (var pointNumber in intersectedWayPoint) {
 				if (pointNumber == player.LastWayPoint + 1) {
@@ -65,15 +63,21 @@ namespace Racetrack.GameServer {
 			}
 			// Конец игры == игрок пересек последний вэйпоинт
 			if (player.LastWayPoint == _world.WayPointsCount() - 1) {
-				handler.ShowEndOfGame(playerId);
+				handler.OnEndOfGame(playerId, true);
 			}
 		}
 
+		// Конец раунда - это момент, когда все игроки уже походили и нужно им дать возможность снова походить
 		private void UpdateRound(string playerId, IGameUpdatesHandler handler) {
-			if (_movesCount != _players.Count) {
+			// Если все игроки вылетели с поля
+			if (_players.Count == 0) {
+				handler.OnEndOfGame(playerId, false);
+			}
+
+			if (_movesCount < _players.Count) {
 				return;
 			}
-			handler.UpdateRound(playerId);
+			handler.OnUpdateRound(playerId);
 			_movesCount = 0;
 			++RoundNumber;
 		}
@@ -84,7 +88,6 @@ namespace Racetrack.GameServer {
 			}
 			var player = _players[playerId];
 			PerformMovement(player, playerId, move, handler);
-			CheckIntersections(player, playerId, handler);
 
 			UpdateRound(playerId, handler);
 		}

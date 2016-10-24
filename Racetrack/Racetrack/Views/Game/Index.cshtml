@@ -41,34 +41,13 @@
 			game.client.showMovements = function(round, name, prevPos, curPos) {
 				map[prevPos.Y][prevPos.X] = 0;
 				map[curPos.Y][curPos.X] = 2;
-				console.log(round +
-					': ' +
-					name +
-					' Moved from (' +
-					prevPos.X +
-					', ' +
-					prevPos.Y +
-					') to (' +
-					curPos.X +
-					', ' +
-					curPos.Y +
-					')');
 				showWorld();
 			};
 			var isCrashed = false;
-			game.client.crashMyCar = function(round, name) {
-				document.location.href = "/";
+			game.client.onCrash = function() {
 				alert("You lose :(");
 				isCrashed = true;
 				document.getElementById('sendmessage').disabled = true;
-			};
-			game.client.crashOtherCar = function(round, name) {
-				$('#world')
-					.append('<li><strong>' +
-						round +
-						': ' +
-						name +
-						'</strong> Crashed</li>');
 			};
 			game.client.beginNextRound = function() {
 				if (!isCrashed) {
@@ -77,14 +56,13 @@
 			};
 			game.client.showEndOfGame = function(isWinner) {
 				if (isWinner) {
-					document.location.href = "/";
 					alert("You win!");
 				} else {
 					if (!isCrashed) {
-						document.location.href = "/";
 						alert("You lose :(");
 					}
 				}
+				document.location.href = "/";
 			};
 			$('#message').focus();
 			$.connection.hub.start()
