@@ -17,19 +17,48 @@
   text-align: center;
 }
 
-#point-green {
-  position: relative;
-  left: 16px; top: 16px;
-  margin: 16px;
-  width: 128px;
-  height: 128px;
-  overflow: hidden;
+/*одна клетка 16px*/
+
+#circle-green {
+    position: absolute;
+    left: 304px; top: 298px;
+	width: 10px;
+	height: 10px;
+	background: #4cff00 ;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	border-radius: 50px;
 }
 
-#point-blue {    
-  position: relative;
-  left: 160px; top: 160px;
-  margin: 16px;
-  width: 128px;
-  height: 128px;
+#circle-red {
+    position: absolute;
+    left: 320px; top: 282px;
+	width: 10px;
+	height: 10px;
+	background: #ff0000 ;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	border-radius: 50px;
+}
+
+#circle-blue {
+    position: absolute;
+    left: 320px; top: 314px;
+	width: 10px;
+	height: 10px;
+	background: #0000ff ;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	border-radius: 50px;
+}
+
+#circle-purple {
+    position: absolute;
+    left: 336px; top: 298px;
+	width: 10px;
+	height: 10px;
+	background: #ff00ff ;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	border-radius: 50px;
 }
