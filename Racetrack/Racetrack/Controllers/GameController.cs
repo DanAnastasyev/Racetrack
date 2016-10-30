@@ -1,26 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
 using Racetrack.GameServer;
+using Racetrack.Models;
 
 namespace Racetrack.Controllers {
 	public class GameController : Controller {
 		// GET: Game
+		[Authorize]
 		public ActionResult Index() {
-			if (!User.Identity.IsAuthenticated) {
-				return RedirectToAction("Login", "Account", new { ReturnUrl = Request.RawUrl });
-			}
 			return View();
 		}
 
+		[Authorize]
 		public ActionResult WaitForConnection() {
-			if (!User.Identity.IsAuthenticated) {
-				return RedirectToAction("Login", "Account", new { ReturnUrl = Request.RawUrl });
-			}
 			return View();
+		}
+
+		[Authorize]
+		public ActionResult Result() {
+			var players = GamesManager.Instance.GetGame(User.Identity.GetUserId()).GetPlayers();
+			players.Sort();
+			return View(players);
 		}
 	}
 }

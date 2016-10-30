@@ -288,6 +288,7 @@
     <Content Include="Views\Game\WaitForConnection.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Rating.cshtml" />
+    <Content Include="Views\Game\Result.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

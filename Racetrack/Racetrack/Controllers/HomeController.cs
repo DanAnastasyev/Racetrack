@@ -27,9 +27,9 @@ namespace Racetrack.Controllers {
 			}
 
 			ViewBag.CurrentFilter = searchString;
-			
-			var players = from s in _db.Results
-						  select s;
+
+			var players = _db.Results.AsQueryable();
+
 			if (!string.IsNullOrEmpty(searchString)) {
 				players = players.Where(s => s.PlayerName.StartsWith(searchString));
 			}

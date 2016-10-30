@@ -26,7 +26,7 @@ namespace Racetrack.GameServer.Hubs {
 			var gameId = _gameManager.GetUserGroup(playerId);
 
 			var game = _gameManager.GetGame(playerId);
-			game.AddPlayer(playerId);
+			game.AddPlayer(playerId, Context.User.Identity.Name);
 
 			await Groups.Add(Context.ConnectionId, gameId);
 			Clients.Group(gameId).showMap(game.GetWorldModel());
