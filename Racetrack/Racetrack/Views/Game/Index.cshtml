@@ -6,7 +6,7 @@
 	<input type="text" id="message"/>
 	<input type="button" id="sendmessage" value="Send"/>
 	<input type="hidden" id="displayname"/>
-	<pre id="world"></pre>
+    <img src="street.png" />
 </div>
 @section scripts {
 	<!--Script references. -->
@@ -22,13 +22,13 @@
 			var map;
 
 			function showWorld() {
-				$('#world').html('');
-				for (var i = 0; i < map.length; ++i) {
-					for (var j = 0; j < map[i].length; ++j) {
-						$('#world').append(map[i][j] + ' ');
-					}
-					$('#world').append('\n');
-				}
+				//$('#world').html('');
+				//for (var i = 0; i < map.length; ++i) {
+				//	for (var j = 0; j < map[i].length; ++j) {
+				//		$('#world').append(map[i][j] + ' ');
+				//	}
+				//	$('#world').append('\n');
+			    //}
 			};
 
 			var game = $.connection.gameHub;
