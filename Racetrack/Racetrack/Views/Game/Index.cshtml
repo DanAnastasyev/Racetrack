@@ -80,7 +80,14 @@
             game.client.showMovements = function (round, name, prevPos, curPos) {
                 map[prevPos.Y][prevPos.X] = 0;
                 map[curPos.Y][curPos.X] = 2;
-                
+                $('document').ready(function () {
+                    var delatX = curPos.X - prev.X;
+                    var oldX = $('#arena').find(name).get('left');
+                    var deltaY = CurPos.Y - prevPos.Y;
+                    var oldY = $('#arena').find(name).get('top');
+                    $('#arena').find(name).css( 
+                        {'left' : oldX + delatX, 'top' : oldY + deltaY })
+                });
                 showWorld();
             };
             var isCrashed = false;
