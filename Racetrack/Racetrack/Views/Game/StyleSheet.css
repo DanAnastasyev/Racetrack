@@ -19,7 +19,7 @@
 
 /*одна клетка 16px*/
 
-#circle-green {
+#player1 {
     position: absolute;
     left: 312px; top: 226px;
 	width: 10px;
@@ -30,7 +30,7 @@
 	border-radius: 50%;
 }
 
-#circle-red {
+#player2 {
     position: absolute;
     left: 312px; top: 242px;
 	width: 10px;
@@ -41,7 +41,7 @@
 	border-radius: 50%;
 }
 
-#circle-blue {
+#player3 {
     position: absolute;
     left: 312px; top: 258px;
 	width: 10px;
@@ -52,7 +52,7 @@
 	border-radius: 50%;
 }
 
-#circle-purple {
+#player4 {
     position: absolute;
     left: 312px; top: 274px;
 	width: 10px;
@@ -63,7 +63,7 @@
 	border-radius: 50%;
 }
 
-#circle-empty-big-1 {
+#circle-empty-big-7 {
     position: absolute;
     left: 325px; top: 240px;
 	width: 15px;
@@ -74,7 +74,7 @@
 	border-radius: 50% 50% 50% 50%;
 }
 
-#circle-empty-small-1 {
+#circle-empty-small-7 {
     position: absolute;
     left: 328px; top: 243px;
 	width: 9px;
@@ -85,7 +85,7 @@
 	border-radius: 50%;
 }
 
-#circle-empty-big-2 {
+#circle-empty-big-8 {
     position: absolute;
     left: 341px; top: 240px;
 	width: 15px;
@@ -96,7 +96,7 @@
 	border-radius: 50% 50% 50% 50%;
 }
 
-#circle-empty-small-2 {
+#circle-empty-small-8 {
     position: absolute;
     left: 344px; top: 243px;
 	width: 9px;
@@ -107,7 +107,7 @@
 	border-radius: 50%;
 }
 
-#circle-empty-big-3 {
+#circle-empty-big-9 {
     position: absolute;
     left: 357px; top: 240px;
 	width: 15px;
@@ -118,7 +118,7 @@
 	border-radius: 50% 50% 50% 50%;
 }
 
-#circle-empty-small-3 {
+#circle-empty-small-9 {
     position: absolute;
     left: 360px; top: 243px;
 	width: 9px;
@@ -195,7 +195,7 @@
 	border-radius: 50%;
 }
 
-#circle-empty-big-7 {
+#circle-empty-big-1 {
     position: absolute;
     left: 325px; top: 272px;
 	width: 15px;
@@ -206,7 +206,7 @@
 	border-radius: 50% 50% 50% 50%;
 }
 
-#circle-empty-small-7 {
+#circle-empty-small-1 {
     position: absolute;
     left: 328px; top: 275px;
 	width: 9px;
@@ -217,7 +217,7 @@
 	border-radius: 50%;
 }
 
-#circle-empty-big-8 {
+#circle-empty-big-2 {
     position: absolute;
     left: 341px; top: 272px;
 	width: 15px;
@@ -228,7 +228,7 @@
 	border-radius: 50% 50% 50% 50%;
 }
 
-#circle-empty-small-8 {
+#circle-empty-small-2 {
     position: absolute;
     left: 344px; top: 275px;
 	width: 9px;
@@ -239,7 +239,7 @@
 	border-radius: 50%;
 }
 
-#circle-empty-big-9 {
+#circle-empty-big-3 {
     position: absolute;
     left: 357px; top: 272px;
 	width: 15px;
@@ -250,7 +250,7 @@
 	border-radius: 50% 50% 50% 50%;
 }
 
-#circle-empty-small-9 {
+#circle-empty-small-3 {
     position: absolute;
     left: 360px; top: 275px;
 	width: 9px;

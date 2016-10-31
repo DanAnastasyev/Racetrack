@@ -15,8 +15,31 @@
     </div>
     <div class="container">
         @*<link rel="stylesheet" href="StyleSheet.css" />*@
-        @*<img src="street.png" />*@
-        <div id="arena"></div>
+        <img src="street.png" />
+        @*<div id="arena">
+            <div id="player1"></div>
+            <div id="player2"></div>
+            <div id="player3"></div>
+            <div id="player4"></div>
+            <div id="circle-empty-big-1"></div>
+            <div id="circle-empty-small-1"></div>
+            <div id="circle-empty-big-2"></div>
+            <div id="circle-empty-small-2"></div>
+            <div id="circle-empty-big-3"></div>
+            <div id="circle-empty-small-3"></div>
+            <div id="circle-empty-big-4"></div>
+            <div id="circle-empty-small-4"></div>
+            <div id="circle-empty-big-5"></div>
+            <div id="circle-empty-small-5"></div>
+            <div id="circle-empty-big-6"></div>
+            <div id="circle-empty-small-6"></div>
+            <div id="circle-empty-big-7"></div>
+            <div id="circle-empty-small-7"></div>
+            <div id="circle-empty-big-8"></div>
+            <div id="circle-empty-small-8"></div>
+            <div id="circle-empty-big-9"></div>
+            <div id="circle-empty-small-9"></div>
+        </div>*@
     </div>
 </body>
 </html>
@@ -42,9 +65,9 @@
                 //	$('#world').append('\n');
                 //}
 
-                //$('document').ready(function () {
-                //    $("#arena").show();
-                //});
+                $('document').ready(function () {
+                    $("#arena").show();
+                });
             };
 
             var game = $.connection.gameHub;
@@ -57,6 +80,7 @@
             game.client.showMovements = function (round, name, prevPos, curPos) {
                 map[prevPos.Y][prevPos.X] = 0;
                 map[curPos.Y][curPos.X] = 2;
+                
                 showWorld();
             };
             var isCrashed = false;
