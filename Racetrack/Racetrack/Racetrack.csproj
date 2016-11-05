@@ -189,6 +189,7 @@
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="GameServer\AI\Strategy.cs" />
     <Compile Include="GameServer\Game.cs" />
     <Compile Include="GameServer\GamesManager.cs" />
     <Compile Include="GameServer\Hubs\ConnectionHub.cs" />

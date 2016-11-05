@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Racetrack.GameServer.Models {
@@ -170,6 +171,11 @@ namespace Racetrack.GameServer.Models {
 			return false;
 		}
 
+		public bool IsOnRightSideOfFinishLine(int x, int y) {
+			var finishLine = _wayPoints.Last();
+			return Area(finishLine.First, finishLine.Second, new Coordinates(x, y)) > 0;
+		}
+
 		// Возвращает список пересеченных waypoint'ов
 		public List<int> FindIntersectedWayPoints(Line movement) {
 			var intersectedWayPoints = new List<int>();
@@ -182,5 +188,9 @@ namespace Racetrack.GameServer.Models {
 		}
 
 		public int WayPointsCount() => _wayPoints.Count;
+
+		public Line GetFinishLine() {
+			return _wayPoints.Last();
+		}
 	}
 }

@@ -103,10 +103,7 @@ namespace Racetrack.GameServer {
 		}
 
 		public PlayerModel GetPlayer(string playerId) {
-			if (!_players.ContainsKey(playerId)) {
-				return null;
-			}
-			return _players[playerId];
+			return !_players.ContainsKey(playerId) ? null : _players[playerId];
 		}
 
 		public List<PlayerModel> GetPlayers() {
