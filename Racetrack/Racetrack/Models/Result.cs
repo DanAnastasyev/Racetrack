@@ -7,6 +7,8 @@ namespace Racetrack.Models {
 		public int NumberOfMovements { get; set; }
 		//public GameLogModel GameLog { get; set; }
 
+		public Result() {}
+
 		public Result(string playerName, int numberOfMovements) {
 			PlayerName = playerName;
 			NumberOfMovements = numberOfMovements;
