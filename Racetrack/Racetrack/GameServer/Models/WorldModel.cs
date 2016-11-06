@@ -11,7 +11,8 @@ namespace Racetrack.GameServer.Models {
 		// пересечение старта после прохождения всех waypoint'ов - переход на новый круг
 		private List<Line> _wayPoints;
 
-		[JsonProperty("Map")] public List<List<int>> Map;
+		[JsonProperty("Map")]
+		public List<List<int>> Map;
 
 		public List<Coordinates> PlayersStartPositions;
 
@@ -185,6 +186,10 @@ namespace Racetrack.GameServer.Models {
 				}
 			}
 			return intersectedWayPoints;
+		}
+
+		public bool IsFinishLineIntersected(Line movement) {
+			return IsIntersects(movement, _wayPoints.Last());
 		}
 
 		public int WayPointsCount() => _wayPoints.Count;

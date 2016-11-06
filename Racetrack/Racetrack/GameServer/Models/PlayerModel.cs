@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Racetrack.GameServer.Models {
-	public class PlayerModel : IComparable<PlayerModel> {
+	public class PlayerModel : IComparable<PlayerModel>, ICloneable {
 		public PlayerModel(Coordinates initialPosition, string playerName) {
 			CurPosition = initialPosition;
 			PrevPosition = initialPosition;
@@ -29,6 +29,15 @@ namespace Racetrack.GameServer.Models {
 			++NumberOfMovements;
 		}
 
+		public PlayerModel GetMovementResult(int dx, int dy) {
+			var result = (PlayerModel) Clone();
+			result.Inertia = new Coordinates(result.Inertia.X + dx, result.Inertia.Y + dy);
+			result.PrevPosition = (Coordinates) result.CurPosition.Clone();
+			result.CurPosition.MoveBy(Inertia);
+			++result.NumberOfMovements;
+			return result;
+		}
+
 		public Line GetLastMovement() {
 			return new Line(PrevPosition, CurPosition);
 		}
@@ -53,6 +62,19 @@ namespace Racetrack.GameServer.Models {
 			// Если оба не доехали до финиша и не слетели с трассы -
 			//  сортируем лексикографически
 			return string.Compare(PlayerName, other.PlayerName, StringComparison.Ordinal);
+		}
+
+		public object Clone() {
+			var result = new PlayerModel(CurPosition, PlayerName) {
+				PrevPosition = PrevPosition,
+				Inertia = Inertia,
+				CurLap = CurLap,
+				IsAlive = IsAlive,
+				IsWinner = IsWinner,
+				LastWayPoint = LastWayPoint,
+				NumberOfMovements = NumberOfMovements
+			};
+			return result;
 		}
 	}
 }
