@@ -45,6 +45,10 @@ namespace Racetrack.GameServer {
 			}
 		}
 
+		public void AddAIToGame(Game game, string aiId) {
+			_players[aiId] = game;
+		}
+
 		public string GetUserGroup(string userId) {
 			return "game_" + _games.IndexOf(_players[userId]);
 		}

@@ -12,6 +12,7 @@ namespace Racetrack.GameServer.AI {
 		private readonly PlayerModel _curPlayer;
 		private readonly List<List<int>> _distancesToFinish = new List<List<int>>();
 		private readonly List<MoveModel> _optimalPath = new List<MoveModel>();
+		private int _pathPosition;
 		private int _maxLapLength;
 		private readonly int _lapsCount;
 
@@ -22,6 +23,10 @@ namespace Racetrack.GameServer.AI {
 
 			CalculateDistancesToFinish();
 			FindPath(_curPlayer);
+		}
+
+		public MoveModel GetNextStep() {
+			return _optimalPath[_pathPosition++];
 		}
 
 		private void AddLine(Queue<PlayerModel> bfsQueue) {
@@ -255,7 +260,7 @@ namespace Racetrack.GameServer.AI {
 				var next = cameFrom[curState];
 
 				var prevInertia = next.Inertia;
-				_optimalPath.Add(new MoveModel(prevInertia.X - curState.Inertia.X, prevInertia.Y - curState.Inertia.Y));
+				_optimalPath.Add(new MoveModel(curState.Inertia.X - prevInertia.X, curState.Inertia.Y - prevInertia.Y));
 
 				curState = next;
 			}

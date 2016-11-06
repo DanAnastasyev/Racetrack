@@ -13,10 +13,15 @@ namespace Racetrack.GameServer {
 		private readonly WorldModel _world;
 		private int _movesCount; // число игроков, походивших в данном раунде
 		private int _numberOfAlivePlayers;
+		private Strategy _aiStrategy;
 
 		public Game() {
 			_players = new Dictionary<string, PlayerModel>();
 			_world = new WorldModel(HttpContext.Current.Server.MapPath("~/GameServer/Resources/map.txt"));
+
+			AddPlayer("AI", "AI");
+			_aiStrategy = new Strategy(_world, _players["AI"], 1);
+			GamesManager.Instance.AddAIToGame(this, "AI");
 		}
 
 		public int RoundNumber { get; private set; } // номер текущего раунда
@@ -28,9 +33,7 @@ namespace Racetrack.GameServer {
 				return;
 			}
 			var newPlayer = new PlayerModel(GetNextAvailablePlayerPosition(), playerName);
-
-			Strategy strategy = new Strategy(_world, newPlayer, 1);
-
+			
 			if (_world.IsValidPosition(newPlayer.CurPosition.X, newPlayer.CurPosition.Y)) {
 				_world.Map[newPlayer.CurPosition.Y][newPlayer.CurPosition.X] = 2;
 			} else {
@@ -53,11 +56,11 @@ namespace Racetrack.GameServer {
 			player.Move(move);
 			++_movesCount;
 			if (!_world.IsMovementOutOfTrack(player.GetLastMovement())) {
-				handler.OnShowMovements(playerId);
+				handler?.OnShowMovements(playerId);
 				CheckWayPointsIntersections(player, playerId, handler);
 			} else {
-				handler.OnShowMovements(playerId);
-				handler.OnCarCrash(playerId);
+				handler?.OnShowMovements(playerId);
+				handler?.OnCarCrash(playerId);
 				_players[playerId].IsAlive = false;
 				DeletePlayer(playerId, handler);
 			}
@@ -73,23 +76,29 @@ namespace Racetrack.GameServer {
 			// Конец игры == игрок пересек последний вэйпоинт
 			if (player.LastWayPoint == _world.WayPointsCount() - 1) {
 				_players[playerId].IsWinner = true;
-				handler.OnEndOfGame(playerId, true);
+				handler?.OnEndOfGame(playerId, true);
 			}
 		}
 
 		// Конец раунда - это момент, когда все игроки уже походили и нужно им дать возможность снова походить
 		private void UpdateRound(string playerId, IGameUpdatesHandler handler) {
+			AIMovement(handler);
+
 			// Если все игроки вылетели с поля
 			if (_numberOfAlivePlayers == 0) {
-				handler.OnEndOfGame(playerId, false);
+				handler?.OnEndOfGame(playerId, false);
 			}
 
 			if (_movesCount < _numberOfAlivePlayers) {
 				return;
 			}
-			handler.OnUpdateRound(playerId);
+			handler?.OnUpdateRound(playerId);
 			_movesCount = 0;
 			++RoundNumber;
+		}
+
+		private void AIMovement(IGameUpdatesHandler handler) {
+			UpdatePlayer("AI", _aiStrategy.GetNextStep(), handler);
 		}
 
 		public void UpdatePlayer(string playerId, MoveModel move, IGameUpdatesHandler handler) {
@@ -99,7 +108,9 @@ namespace Racetrack.GameServer {
 			var player = _players[playerId];
 			PerformMovement(player, playerId, move, handler);
 
-			UpdateRound(playerId, handler);
+			if (!playerId.Equals("AI")) {
+				UpdateRound(playerId, handler);
+			}
 		}
 
 		public bool HasPlayer(string playerId) {
