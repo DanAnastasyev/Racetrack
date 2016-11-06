@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Racetrack.GameServer.AI;
 using Racetrack.GameServer.Models;
 
 namespace Racetrack.GameServer {
@@ -27,6 +28,9 @@ namespace Racetrack.GameServer {
 				return;
 			}
 			var newPlayer = new PlayerModel(GetNextAvailablePlayerPosition(), playerName);
+
+			Strategy strategy = new Strategy(_world, newPlayer, 1);
+
 			if (_world.IsValidPosition(newPlayer.CurPosition.X, newPlayer.CurPosition.Y)) {
 				_world.Map[newPlayer.CurPosition.Y][newPlayer.CurPosition.X] = 2;
 			} else {

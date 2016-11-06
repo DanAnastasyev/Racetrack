@@ -31,7 +31,8 @@ namespace Racetrack.GameServer.Models {
 
 		public PlayerModel GetMovementResult(int dx, int dy) {
 			var result = (PlayerModel) Clone();
-			result.Inertia = new Coordinates(result.Inertia.X + dx, result.Inertia.Y + dy);
+			result.Inertia.X += dx;
+			result.Inertia.Y += dy;
 			result.PrevPosition = (Coordinates) result.CurPosition.Clone();
 			result.CurPosition.MoveBy(Inertia);
 			++result.NumberOfMovements;
@@ -65,9 +66,9 @@ namespace Racetrack.GameServer.Models {
 		}
 
 		public object Clone() {
-			var result = new PlayerModel(CurPosition, PlayerName) {
-				PrevPosition = PrevPosition,
-				Inertia = Inertia,
+			var result = new PlayerModel((Coordinates) CurPosition.Clone(), PlayerName) {
+				PrevPosition = (Coordinates) PrevPosition.Clone(),
+				Inertia = (Coordinates) Inertia.Clone(),
 				CurLap = CurLap,
 				IsAlive = IsAlive,
 				IsWinner = IsWinner,

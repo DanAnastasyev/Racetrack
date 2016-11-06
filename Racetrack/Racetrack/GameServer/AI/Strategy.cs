@@ -7,7 +7,7 @@ using WebGrease.Css.Extensions;
 
 namespace Racetrack.GameServer.AI {
 	public class Strategy {
-		private static readonly int MaxPathLength = int.MaxValue;
+		private const int MaxPathLength = int.MaxValue;
 		private readonly WorldModel _worldModel;
 		private readonly PlayerModel _curPlayer;
 		private readonly List<List<int>> _distancesToFinish = new List<List<int>>();
@@ -24,27 +24,28 @@ namespace Racetrack.GameServer.AI {
 			FindPath(_curPlayer);
 		}
 
-		private void AddFinishLine(Queue<Coordinates> bfsQueue) {
-			Line finishLine = _worldModel.GetFinishLine();
+		private void AddLine(Queue<PlayerModel> bfsQueue) {
+			Line wayPoint = _worldModel.GetFinishLine();
 
-			double dx = finishLine.First.X - finishLine.Second.X;
-			double dy = finishLine.First.Y - finishLine.Second.Y;
+			double dx = wayPoint.Second.X - wayPoint.First.X;
+			double dy = wayPoint.Second.Y - wayPoint.First.Y;
 
-			int minX = Math.Min(finishLine.First.X, finishLine.Second.X);
-			int minY = Math.Min(finishLine.First.Y, finishLine.Second.Y);
-			int maxX = Math.Max(finishLine.First.X, finishLine.Second.X);
-			int maxY = Math.Max(finishLine.First.Y, finishLine.Second.Y);
+			int minX = Math.Min(wayPoint.First.X, wayPoint.Second.X);
+			int minY = Math.Min(wayPoint.First.Y, wayPoint.Second.Y);
+			int maxX = Math.Max(wayPoint.First.X, wayPoint.Second.X);
+			int maxY = Math.Max(wayPoint.First.Y, wayPoint.Second.Y);
 
 			double deltaX = (dx > dy) ? 1 : (dx / dy);
 			double deltaY = (dx > dy) ? (dy / dx) : 1;
 
-			for (double i = finishLine.First.X; i >= minX && i <= maxX; i += deltaX) {
-				for (double j = finishLine.First.Y; j >= minY && j <= maxY; j += deltaY) {
+			for (double i = wayPoint.First.X; i >= minX && i <= maxX; i += deltaX) {
+				for (double j = wayPoint.First.Y; j >= minY && j <= maxY; j += deltaY) {
 					for (int di = -1; di <= 1; ++di) {
 						for (int dj = -1; dj <= 1; ++dj) {
 							if (_worldModel.IsEmptyPosition((int) (i + di), (int) (j + dj))
 									&& _worldModel.IsOnRightSideOfFinishLine((int) (i + di), (int) (j + dj))) {
-								bfsQueue.Enqueue(new Coordinates((int) (i + di), (int) (j + dj)));
+								bfsQueue.Enqueue(new PlayerModel(
+									new Coordinates((int) (i + di), (int) (j + dj)), _curPlayer.PlayerName));
 							}
 						}
 					}
@@ -60,46 +61,72 @@ namespace Racetrack.GameServer.AI {
 			}
 		}
 
-		private void CalculateDistancesToFinish() {
-			_distancesToFinish.AddRange(Enumerable.Repeat(new List<int>(), _worldModel.Height));
-			_distancesToFinish.ForEach(list => list.AddRange(Enumerable.Repeat(-1, _worldModel.Width)));
+		private int GetNextWayPoint(PlayerModel curState) {
+			if (curState.LastWayPoint == -1) {
+				return _worldModel.WayPointsCount() - 2;
+			} else if (curState.LastWayPoint == 0) {
+				return _worldModel.WayPointsCount() - 1;
+			} else {
+				return curState.LastWayPoint - 1;
+			}
+		}
 
-			var bfsQueue = new Queue<Coordinates>();
-			AddFinishLine(bfsQueue);
-			var finishLineNumber = _worldModel.WayPointsCount() - 1;
-
+		private void CalculateDistances(Queue<PlayerModel> bfsQueue) {
 			while (bfsQueue.Count != 0) {
 				var curNode = bfsQueue.Dequeue();
 
-				if (_distancesToFinish[curNode.Y][curNode.X] != -1) {
+				if (_distancesToFinish[curNode.CurPosition.Y][curNode.CurPosition.X] != -1) {
 					continue;
 				}
 				// Ищем минимальное значение расстояния до финиша среди соседей
-				int minDistance = MaxPathLength; 
+				int minDistance = MaxPathLength;
 				for (int i = -1; i <= 1; ++i) {
 					for (int j = -1; j <= 1; ++j) {
-						if (!_worldModel.IsEmptyPosition(curNode.X + j, curNode.Y + i)) {
+						if (!_worldModel.IsEmptyPosition(curNode.CurPosition.X + j, curNode.CurPosition.Y + i)) {
 							continue;
 						}
 						// Если на клетку можно встать, её еще не посетили 
 						//  и она не находится с другой стороны от финиша - идем в неё
-						var movementLine = new Line(new Coordinates(curNode.Y, curNode.X),
-							new Coordinates(curNode.Y + j, curNode.X + i));
-						var reverseMovementLine = new Line(new Coordinates(curNode.Y + j, curNode.X + i),
-							new Coordinates(curNode.Y, curNode.X));
-						if (!_worldModel.FindIntersectedWayPoints(movementLine).Contains(finishLineNumber)
-								&& _distancesToFinish[curNode.Y + j][curNode.X + i] == -1) {
-							bfsQueue.Enqueue(new Coordinates(curNode.X + j, curNode.Y + i));
-						} else if (!_worldModel.FindIntersectedWayPoints(reverseMovementLine).Contains(finishLineNumber)
-								&& _distancesToFinish[curNode.Y + j][curNode.X + i] != -1) {
-							// Уже посещенная вершина
-							minDistance = Math.Min(_distancesToFinish[curNode.Y + j][curNode.X + i], minDistance);
+						var movementLine = new Line(new Coordinates(curNode.CurPosition.X, curNode.CurPosition.Y),
+							new Coordinates(curNode.CurPosition.X + j, curNode.CurPosition.Y + i));
+
+						var wayPoints = _worldModel.FindIntersectedWayPoints(movementLine);
+						int nextWayPoint = GetNextWayPoint(curNode);
+
+						if (_distancesToFinish[curNode.CurPosition.Y + i][curNode.CurPosition.X + j] == -1) {
+							if (wayPoints.Count == 0 || wayPoints.Contains(curNode.LastWayPoint) || wayPoints.Contains(nextWayPoint)) {
+								// Если пересекаем следующий вэйпоинт
+								PlayerModel nextState = (PlayerModel) curNode.Clone();
+								nextState.CurPosition.X += j;
+								nextState.CurPosition.Y += i;
+								if (wayPoints.Contains(nextWayPoint)) {
+									nextState.LastWayPoint = nextWayPoint;
+								}
+								bfsQueue.Enqueue(nextState);
+							}
+						} else {
+							// Уже посещенная или стартовая вершина
+							if (curNode.LastWayPoint != 0 || !wayPoints.Contains(_worldModel.WayPointsCount() - 1)) {
+								minDistance = Math.Min(_distancesToFinish[curNode.CurPosition.Y + i][curNode.CurPosition.X + j],
+									minDistance);
+							}
 						}
 					}
 				}
 				// Мин. расстояние до текущей вершины выражается через мин. расстояние до соседей
-				_distancesToFinish[curNode.Y][curNode.X] = minDistance + 1;
+				_distancesToFinish[curNode.CurPosition.Y][curNode.CurPosition.X] = minDistance + 1;
 			}
+		}
+
+		private void CalculateDistancesToFinish() {
+			for (int i = 0; i < _worldModel.Height; ++i) {
+				_distancesToFinish.Add(new List<int>(Enumerable.Repeat(-1, _worldModel.Width)));
+			}
+
+			var bfsQueue = new Queue<PlayerModel>();
+			// Считаем дистанции при прохождении через промежуточные wayPoints
+			AddLine(bfsQueue);
+			CalculateDistances(bfsQueue);
 
 			foreach (var distances in _distancesToFinish) {
 				foreach (var distance in distances) {
@@ -115,8 +142,7 @@ namespace Racetrack.GameServer.AI {
 			if (_distancesToFinish[nextState.CurPosition.Y][nextState.CurPosition.X] == -1) {
 				return int.MaxValue;
 			}
-			return ( _distancesToFinish[nextState.CurPosition.Y][nextState.CurPosition.X]
-				+ (_lapsCount - state.CurLap) * _maxLapLength ) / 4;
+			return _distancesToFinish[nextState.CurPosition.Y][nextState.CurPosition.X];
 		}
 
 		private bool FindPath(PlayerModel initState) {
@@ -135,6 +161,7 @@ namespace Racetrack.GameServer.AI {
 				openSetVal[fScore[initState]] = new List<PlayerModel>();
 			}
 			openSetVal[fScore[initState]].Add(initState);
+			openSet.Add(initState);
 			cameFrom[initState] = initState;
 
 			while (openSetVal.Count != 0) {
@@ -159,42 +186,65 @@ namespace Racetrack.GameServer.AI {
 					}
 				}
 
-				for (int i = -1; i <= 1; ++i) {
-					for (int j = -1; j <= 1; ++j) {
-						if (!_worldModel.IsEmptyPosition(curState.CurPosition.X + curState.Inertia.X + j,
-								curState.CurPosition.Y + curState.Inertia.Y + i)) {
-							continue;
-						}
-
-						var neighborState = curState.GetMovementResult(j, i);
-
-						if (closedSet.Contains(neighborState)) {
-							continue;
-						}
-
-						int tentGScore = gScore[curState] + 1;
-
-						if (gScore.ContainsKey(neighborState) && (tentGScore > gScore[neighborState])) {
-							continue;
-						}
-						cameFrom[neighborState] = curState;
-						gScore[neighborState] = tentGScore;
-						int heuristic = CalculateHeuristic(curState, neighborState);
-						if (heuristic == int.MaxValue) {
-							continue;
-						}
-						fScore[neighborState] = gScore[neighborState] + heuristic;
-						if (!openSet.Add(neighborState)) {
-							continue;
-						}
-						if (!openSetVal.ContainsKey(fScore[neighborState])) {
-							openSetVal[fScore[neighborState]] = new List<PlayerModel>();
-						}
-						openSetVal[fScore[neighborState]].Add(neighborState);
-					}
-				}
+				AddNeighbors(curState, closedSet, gScore, cameFrom, fScore, openSet, openSetVal);
 			}
 			return false;
+		}
+
+		private void AddNeighbors(PlayerModel curState, HashSet<PlayerModel> closedSet, Dictionary<PlayerModel, int> gScore, 
+				IDictionary<PlayerModel, PlayerModel> cameFrom, Dictionary<PlayerModel, int> fScore, 
+				ISet<PlayerModel> openSet, IDictionary<int, List<PlayerModel>> openSetVal) {
+
+			int nextWayPoint = GetNextWayPoint(curState);
+			for (int i = -1; i <= 1; ++i) {
+				for (int j = -1; j <= 1; ++j) {
+					if (!_worldModel.IsEmptyPosition(curState.CurPosition.X + curState.Inertia.X + j,
+							curState.CurPosition.Y + curState.Inertia.Y + i)) {
+						continue;
+					}
+
+					var neighborState = curState.GetMovementResult(j, i);
+					var wayPoints = _worldModel.FindIntersectedWayPoints(
+						new Line(curState.CurPosition, neighborState.CurPosition));
+					if (wayPoints.Count == 0 || wayPoints.Contains(curState.LastWayPoint) || wayPoints.Contains(nextWayPoint)) {
+						if (wayPoints.Contains(nextWayPoint)) {
+							neighborState.LastWayPoint = nextWayPoint;
+						}
+					} else {
+						continue;
+					}
+
+//					// Запрещаем пересекать финиш раньше времени
+//					if (_worldModel.IsFinishLineIntersected(new Line(curState.CurPosition, neighborState.CurPosition))
+//							&& curState.LastWayPoint != _worldModel.WayPointsCount() - 2) {
+//						continue;
+//					}
+
+					if (closedSet.Contains(neighborState)) {
+						continue;
+					}
+
+					int tentGScore = gScore[curState] + 1;
+
+					if (gScore.ContainsKey(neighborState) && (tentGScore > gScore[neighborState])) {
+						continue;
+					}
+					cameFrom[neighborState] = curState;
+					gScore[neighborState] = tentGScore;
+					int heuristic = CalculateHeuristic(curState, neighborState);
+					if (heuristic == int.MaxValue) {
+						continue;
+					}
+					fScore[neighborState] = gScore[neighborState] + heuristic;
+					if (!openSet.Add(neighborState)) {
+						continue;
+					}
+					if (!openSetVal.ContainsKey(fScore[neighborState])) {
+						openSetVal[fScore[neighborState]] = new List<PlayerModel>();
+					}
+					openSetVal[fScore[neighborState]].Add(neighborState);
+				}
+			}
 		}
 
 		private void ReconstructPath(Dictionary<PlayerModel, PlayerModel> cameFrom, PlayerModel goal) {
@@ -204,11 +254,8 @@ namespace Racetrack.GameServer.AI {
 			for (; cameFrom[curState] != curState;) {
 				var next = cameFrom[curState];
 
-				var prevPosition = (Coordinates) next.PrevPosition.Clone();
-				var prevVelocity = next.Inertia;
-				prevPosition.X += prevVelocity.X;
-				prevPosition.Y += prevVelocity.Y;
-				_optimalPath.Add(new MoveModel(curState.CurPosition.X - prevPosition.X, curState.CurPosition.Y - prevPosition.Y));
+				var prevInertia = next.Inertia;
+				_optimalPath.Add(new MoveModel(prevInertia.X - curState.Inertia.X, prevInertia.Y - curState.Inertia.Y));
 
 				curState = next;
 			}

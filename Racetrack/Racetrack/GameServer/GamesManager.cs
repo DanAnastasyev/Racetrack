@@ -31,15 +31,15 @@ namespace Racetrack.GameServer {
 
 		public void AddPlayerToWaitingQueue(string userId, string connectionId, IGamesManagerCallbacks handler) {
 			_playersQueue.Add(new UserConnection(userId, connectionId));
-			if (_playersQueue.Count > 1) {
+			if (_playersQueue.Count > 0) {
 				_games.Add(new Game());
 
 				var connectionIds = new List<string>();
-				for (var i = 0; i < 2; ++i) {
+				for (var i = 0; i < 1; ++i) {
 					connectionIds.Add(_playersQueue[i].ConnectionId);
 					_players[_playersQueue[i].UserId] = _games.Last();
 				}
-				_playersQueue.RemoveRange(0, 2);
+				_playersQueue.RemoveRange(0, 1);
 
 				handler.JoinPlayers(connectionIds);
 			}
