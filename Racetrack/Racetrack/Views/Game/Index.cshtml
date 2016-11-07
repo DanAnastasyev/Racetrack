@@ -63,19 +63,29 @@
                     for (var i = 0; i < map.length; ++i) {
                         for (var j = 0; j < map[i].length; ++j) {
                             if (map[i][j] == 1) {
-                                ctx.fillStyle = "#0000ff";
+                                ctx.fillStyle = "#0000aa";
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
                             }
                             if (map[i][j] == 2) {
-                                ctx.fillStyle = "#00ff00";
+                                ctx.fillStyle = "#00aa00";
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
                             }
                         }
                     }
-
-                    //ctx.fillRect(25, 25, 100, 100);
-                    //ctx.clearRect(45, 45, 60, 60);
-                    //ctx.strokeRect(50, 50, 50, 50);
+                    //рисование вертикальных линий
+                    for (var x = 0.5; x < arena.width; x += sizeOfCell) {
+                        ctx.fillStyle = "#000000";
+                        ctx.moveTo(x, 0);
+                        ctx.lineTo(x, arena.height);
+                    }
+                    //рисование горизонтальных линий
+                    for (var y = 0.5; y < arena.height; y += sizeOfCell) {
+                        ctx.fillStyle = "#000000";
+                        ctx.moveTo(0, y);
+                        ctx.lineTo(arena.width, y);
+                    }
+                    ctx.strokeStyle = "#eee";
+                    ctx.stroke();
                 }
             };
 
