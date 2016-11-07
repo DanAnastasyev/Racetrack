@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="StyleSheet.css" />
+    @*<link rel="stylesheet" href="StyleSheet.css" />*@
 </head>
 <body>
     <h2>Racetrack</h2>
@@ -12,39 +12,13 @@
         <input type="text" id="message" />
         <input type="button" id="sendmessage" value="Send" />
         <input type="hidden" id="displayname" />
-        <canvas id="arena"></canvas>
-        @*<object id="arena"></object>*@ @*делает маленькую картинку*@
+        @*<canvas id="arena"></canvas>*@
+        @*<canvas id="player1"></canvas>
+            <canvas id="player2"></canvas>
+            <canvas id="player3"></canvas>
+            <canvas id="player4"></canvas>*@
     </div>
-
-    @*<object id="arena"></object>*@ @*делает маленькую картинку*@
-
-    @*<div class="container">
-        <img src="street.png" />
-        <div id="arena">
-            <div id="player1"></div>
-            <div id="player2"></div>
-            <div id="player3"></div>
-            <div id="player4"></div>
-            <div id="circle-empty-big-1"></div>
-            <div id="circle-empty-small-1"></div>
-            <div id="circle-empty-big-2"></div>
-            <div id="circle-empty-small-2"></div>
-            <div id="circle-empty-big-3"></div>
-            <div id="circle-empty-small-3"></div>
-            <div id="circle-empty-big-4"></div>
-            <div id="circle-empty-small-4"></div>
-            <div id="circle-empty-big-5"></div>
-            <div id="circle-empty-small-5"></div>
-            <div id="circle-empty-big-6"></div>
-            <div id="circle-empty-small-6"></div>
-            <div id="circle-empty-big-7"></div>
-            <div id="circle-empty-small-7"></div>
-            <div id="circle-empty-big-8"></div>
-            <div id="circle-empty-small-8"></div>
-            <div id="circle-empty-big-9"></div>
-            <div id="circle-empty-small-9"></div>
-        </div>
-    </div>*@
+    <canvas id="arena"></canvas>
 </body>
 </html>
 @section scripts {
@@ -59,6 +33,7 @@
     <script type="text/javascript">
         $(function () {
             var map;
+            var sizeOfCell = 32; //размер одной клетки
 
             function showWorld() {
                 //$('#world').html('');
@@ -72,13 +47,35 @@
                 //$('document').ready(function () {
                 //    $("#arena").show();
                 //});
-                var canvas = document.getElementById('arena');
-                if (canvas.getContext) {
-                    var ctx = canvas.getContext('2d');
 
-                    ctx.fillRect(25, 25, 100, 100);
-                    ctx.clearRect(45, 45, 60, 60);
-                    ctx.strokeRect(50, 50, 50, 50);
+                var arena = document.getElementById('arena');
+
+                //var palyer1 = document.getElementById('player1');
+                //var palyer2 = document.getElementById('player2');
+                //var palyer3 = document.getElementById('player3');
+                //var palyer4 = document.getElementById('player4');
+                if (arena.getContext) {
+                    var ctx = arena.getContext('2d');
+                    var n = map.length; // количество клеток - считаем что поле квадратное
+                    arena.width = sizeOfCell * n;
+                    arena.height = sizeOfCell * n;
+
+                    for (var i = 0; i < map.length; ++i) {
+                        for (var j = 0; j < map[i].length; ++j) {
+                            if (map[i][j] == 1) {
+                                ctx.fillStyle = "#0000ff";
+                                ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
+                            }
+                            if (map[i][j] == 2) {
+                                ctx.fillStyle = "#00ff00";
+                                ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
+                            }
+                        }
+                    }
+
+                    //ctx.fillRect(25, 25, 100, 100);
+                    //ctx.clearRect(45, 45, 60, 60);
+                    //ctx.strokeRect(50, 50, 50, 50);
                 }
             };
 
@@ -93,12 +90,12 @@
                 map[prevPos.Y][prevPos.X] = 0;
                 map[curPos.Y][curPos.X] = 2;
                 $('document').ready(function () {
-                    var delatX = curPos.X - prev.X;
-                    var oldX = $('#arena').find(name).get('left');
-                    var deltaY = CurPos.Y - prevPos.Y;
-                    var oldY = $('#arena').find(name).get('top');
-                    $('#arena').find(name).css( 
-                        {'left' : oldX + delatX, 'top' : oldY + deltaY })
+                    //    var delatX = curPos.X - prev.X;
+                    //    var oldX = $('#arena').find(name).get('left');
+                    //    var deltaY = CurPos.Y - prevPos.Y;
+                    //    var oldY = $('#arena').find(name).get('top');
+                    //    $('#arena').find(name).css(
+                    //        {'left' : oldX + delatX, 'top' : oldY + deltaY })
                 });
                 showWorld();
             };
