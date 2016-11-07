@@ -36,24 +36,7 @@
             var sizeOfCell = 32; //размер одной клетки
 
             function showWorld() {
-                //$('#world').html('');
-                //for (var i = 0; i < map.length; ++i) {
-                //	for (var j = 0; j < map[i].length; ++j) {
-                //		$('#world').append(map[i][j] + ' ');
-                //	}
-                //	$('#world').append('\n');
-                //}
-
-                //$('document').ready(function () {
-                //    $("#arena").show();
-                //});
-
                 var arena = document.getElementById('arena');
-
-                //var palyer1 = document.getElementById('player1');
-                //var palyer2 = document.getElementById('player2');
-                //var palyer3 = document.getElementById('player3');
-                //var palyer4 = document.getElementById('player4');
                 if (arena.getContext) {
                     var ctx = arena.getContext('2d');
                     var n = map.length; // количество клеток - считаем что поле квадратное
@@ -67,20 +50,23 @@
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
                             }
                             if (map[i][j] == 2) {
+                                var r = 0.5 * sizeOfCell;
+                                ctx.beginPath();
+                                ctx.arc(j * sizeOfCell + r,
+                                        i * sizeOfCell + r,
+                                        r - 2, 0, Math.PI * 2, true);
                                 ctx.fillStyle = "#00aa00";
-                                ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
+                                ctx.fill();
                             }
                         }
                     }
                     //рисование вертикальных линий
                     for (var x = 0.5; x < arena.width; x += sizeOfCell) {
-                        ctx.fillStyle = "#000000";
                         ctx.moveTo(x, 0);
                         ctx.lineTo(x, arena.height);
                     }
                     //рисование горизонтальных линий
                     for (var y = 0.5; y < arena.height; y += sizeOfCell) {
-                        ctx.fillStyle = "#000000";
                         ctx.moveTo(0, y);
                         ctx.lineTo(arena.width, y);
                     }
