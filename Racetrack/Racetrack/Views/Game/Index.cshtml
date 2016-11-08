@@ -19,9 +19,9 @@
             <canvas id="player4"></canvas>*@
     </div>
     <canvas id="arena"></canvas>
-    <canvas id="player1"></canvas>
+    @*<canvas id="player1"></canvas>*@
 
-    <canvas id="possibility"></canvas>
+    @*<canvas id="possibility"></canvas>*@
 
 </body>
 </html>
@@ -38,18 +38,18 @@
         $(function () {
             // arena - отрисовка фона
             var map;
-            var names = [];
-            var players_id = [];
-            var players_x = [];
-            var Players_y = [];
-            var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
+            //var names = [];
+            //var players_id = [];
+            //var players_x = [];
+            //var Players_y = [];
+            //var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
 
             var sizeOfCell = 32; //размер одной клетки
-            // player1 - отрисовка 1 игрока
-            var player1 = document.getElementById('player1');
-            var player1_x = 10;
-            var player1_y = 10;
-            var player1_style = "#00aa00";
+            //// player1 - отрисовка 1 игрока
+            //var player1 = document.getElementById('player1');
+            //var player1_x;
+            //var player1_y;
+            //var player1_style = "#00aa00";
 
             function showWorld() {
                 // arena - отрисовка фона
@@ -62,20 +62,21 @@
 
                     for (var i = 0; i < map.length; ++i) {
                         for (var j = 0; j < map[i].length; ++j) {
-                            if (map[i][j] == 9) {
+                            if (map[i][j] == 1) {
                                 ctx.fillStyle = "#0000aa";
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
                             }
                             if (map[i][j] == 2) {
-                                player1_x = j;
-                                player1_y = i;
-                                //var r = 0.5 * sizeOfCell;
-                                //ctx.beginPath();
-                                //ctx.arc(j * sizeOfCell + r,
-                                //        i * sizeOfCell + r,
-                                //        r - 2, 0, Math.PI * 2, true);
-                                //ctx.fillStyle = "#00aa00";
-                                //ctx.fill();
+                                //player1_x = j;
+                                //player1_y = i;
+
+                                var r = 0.5 * sizeOfCell;
+                                ctx.beginPath();
+                                ctx.arc(j * sizeOfCell + r,
+                                        i * sizeOfCell + r,
+                                        r - 2, 0, Math.PI * 2, true);
+                                ctx.fillStyle = "#00aa00";
+                                ctx.fill();
                             }
                         }
                     }
@@ -92,24 +93,23 @@
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
                 }
-                // player1 - отрисовка 1 игрока
-                if (player1.getContext) {
-                    var ctx = arena.getContext('2d');
-                    var r = 0.5 * sizeOfCell;
-                    ctx.beginPath();
-                    ctx.arc(player1_x * sizeOfCell + r,
-                            player1_y * sizeOfCell + r,
-                            r - 2, 0, Math.PI * 2, true);
-                    ctx.fillStyle = player1_style;
-                    ctx.fill();
-                }
-                // .. здесь должны добавиться функции отрисовки других игроков
+                //// player1 - отрисовка 1 игрока
+                //if (player1.getContext) {
+                //    var ctx = arena.getContext('2d');
+                //    var r = 0.5 * sizeOfCell;
+                //    ctx.beginPath();
+                //    ctx.arc(player1_x * sizeOfCell + r,
+                //            player1_y * sizeOfCell + r,
+                //            r - 2, 0, Math.PI * 2, true);
+                //    ctx.fillStyle = player1_style;
+                //    ctx.fill();
+                //}
+                //// .. здесь должны добавиться функции отрисовки других игроков
 
-                // отрисовка возможностей хода
-
+                //// отрисовка возможностей хода
             };
 
-            game.client.drowPlayer = function (name, prevPos, curPos) {
+            drawPlayer = function (name, prevPos, curPos) {
                 var p = -1;
                 switch (name) {
                     case names[0]:
@@ -141,7 +141,6 @@
             game.client.showMovements = function (round, name, prevPos, curPos) {
                 map[prevPos.Y][prevPos.X] = 0;
                 map[curPos.Y][curPos.X] = 2;
-
                 showWorld();
             };
             var isCrashed = false;
