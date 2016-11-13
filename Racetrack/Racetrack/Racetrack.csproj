@@ -199,6 +199,7 @@
     <Compile Include="GameServer\Models\Coordinates.cs" />
     <Compile Include="GameServer\Models\MoveModel.cs" />
     <Compile Include="GameServer\Models\PlayerModel.cs" />
+    <Compile Include="Models\GameSettingsModel.cs" />
     <Compile Include="Models\Result.cs" />
     <Compile Include="GameServer\Models\WorldModel.cs" />
     <Compile Include="Global.asax.cs">
@@ -285,6 +286,7 @@
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Game\GameSettings.cshtml" />
     <None Include="Views\Game\Index.cshtml" />
     <Content Include="Views\Game\WaitForConnection.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />

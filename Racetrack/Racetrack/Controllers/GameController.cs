@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Racetrack.GameServer;
@@ -13,7 +14,14 @@ namespace Racetrack.Controllers {
 		}
 
 		[Authorize]
-		public ActionResult WaitForConnection() {
+		[HttpPost]
+		public ActionResult WaitForConnection(GameSettingsModel game) {
+			return View();
+		}
+
+		[Authorize]
+		public ActionResult GameSettings() {
+			ViewBag.Maps = new List<string> { "map1" };
 			return View();
 		}
 

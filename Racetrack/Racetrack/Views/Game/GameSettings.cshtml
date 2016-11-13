@@ -1,0 +1,23 @@
+﻿@model Racetrack.Models.GameSettingsModel
+@{
+	ViewBag.Title = "GameSettings";
+}
+
+<h3>Set your game</h3>
+<div class="row">
+	<div class="col-md-8">
+		<div class="form-group">
+			@using (Html.BeginForm("WaitForConnection", "Game", FormMethod.Post)) {
+				@Html.DropDownListFor(m => m.Map, new SelectList(ViewBag.Maps), "Select Map")
+				@Html.DropDownListFor(m => m.WithAI, new SelectList(new List<SelectListItem>() {
+						new SelectListItem() {Text = "With AI", Value = "true"},
+						new SelectListItem() {Text = "With Players", Value = "false" }
+					}, "Value", "Text" ))
+
+				<p>
+					<input type="submit" value="Seach game!" class="btn btn-primary" />
+				</p>
+			}
+		</div>
+	</div>
+</div>
