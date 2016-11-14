@@ -41,10 +41,10 @@
             var arena_color = "#0000aa";
             var names = [];
             var players_id = [0, 1, 2, 3];
-            var players_x = [1, 11, -1, -1];
-            var players_y = [1, 11, -1, -1];
+            var players_x = [1, 2, 3, 4];
+            var players_y = [4, 3, 2, 1];
             var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
-
+            var players_connect = [1, 1, 1, 1]; // показывает подключен ли данный игрок
 
             var sizeOfCell = 32; //размер одной клетки
 
@@ -96,38 +96,11 @@
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
 
-                    var r = 0.5 * sizeOfCell;
-                    ctx.beginPath();
-                    var x = players_x[0];
-                    var y = players_y[0];
-                    ctx.arc(x * sizeOfCell + r,
-                            x * sizeOfCell + r,
-                            r - 2, 0, Math.PI * 2, true);
-                    //ctx.fillStyle = "#00aa00";
-                    ctx.fillStyle = players_colors[0];
-                    ctx.fill();
-
-                    alert(players_colors[0]);
-                    //showPlayer(0, ctx);
-                    //showPlayer(1, ctx);
-                    //showPlayer(2, ctx);
-                    //showPlayer(3, ctx);
-
+                    showPlayer(0, ctx);
+                    showPlayer(1, ctx);
+                    showPlayer(2, ctx);
+                    showPlayer(3, ctx);
                 }
-                //// player1 - отрисовка 1 игрока
-                //if (player1.getContext) {
-                //    var ctx = arena.getContext('2d');
-                //    var r = 0.5 * sizeOfCell;
-                //    ctx.beginPath();
-                //    ctx.arc(player1_x * sizeOfCell + r,
-                //            player1_y * sizeOfCell + r,
-                //            r - 2, 0, Math.PI * 2, true);
-                //    ctx.fillStyle = player1_style;
-                //    ctx.fill();
-                //}
-                //// .. здесь должны добавиться функции отрисовки других игроков
-
-                //// отрисовка возможностей хода
             };
 
             drawPlayers = function (name, prevPos, curPos, ctx) {
@@ -155,16 +128,17 @@
             }
 
             showPlayer = function (p, ctx) {
-                var r = 0.5 * sizeOfCell;
-                ctx.beginPath();
-                var x = players_x[p];
-                var y = players_y[p];
-                ctx.arc(y * sizeOfCell + r,
-                        x * sizeOfCell + r,
-                        r - 2, 0, Math.PI * 2, true);
-                //ctx.fillStyle = "#00aa00";
-                ctx.fillStyle = players_colors[p];
-                ctx.fill();
+                if (players_connect[p]) {
+                    var r = 0.5 * sizeOfCell;
+                    ctx.beginPath();
+                    var x = players_x[p];
+                    var y = players_y[p];
+                    ctx.arc(y * sizeOfCell + r,
+                            x * sizeOfCell + r,
+                            r - 2, 0, Math.PI * 2, true);
+                    ctx.fillStyle = players_colors[p];
+                    ctx.fill();
+                }
             };
 
             var game = $.connection.gameHub;
