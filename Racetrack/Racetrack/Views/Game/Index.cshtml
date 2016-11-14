@@ -68,13 +68,18 @@
                                 //player1_x = j;
                                 //player1_y = i;
 
-                                var r = 0.5 * sizeOfCell;
-                                ctx.beginPath();
-                                ctx.arc(j * sizeOfCell + r,
-                                        i * sizeOfCell + r,
-                                        r - 2, 0, Math.PI * 2, true);
-                                ctx.fillStyle = "#00aa00";
-                                ctx.fill();
+                                players_x[0] = i; players_x[1] = i; players_x[2] = i; players_x[3] = i;
+                                players_y[0] = j; players_y[1] = j; players_y[2] = j; players_y[3] = j;
+
+                                //showPlayer(0, ctx);
+
+                                //var r = 0.5 * sizeOfCell;
+                                //ctx.beginPath();
+                                //ctx.arc(j * sizeOfCell + r,
+                                //        i * sizeOfCell + r,
+                                //        r - 2, 0, Math.PI * 2, true);
+                                //ctx.fillStyle = "#00aa00";
+                                //ctx.fill();
                             }
                         }
                     }
@@ -90,6 +95,8 @@
                     }
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
+
+
                 }
                 //// player1 - отрисовка 1 игрока
                 //if (player1.getContext) {
@@ -107,7 +114,7 @@
                 //// отрисовка возможностей хода
             };
 
-            drawPlayer = function (name, prevPos, curPos) {
+            drawPlayers = function (name, prevPos, curPos, ctx) {
                 var p = -1;
                 switch (name) {
                     case names[0]:
@@ -128,8 +135,21 @@
                 if (p == -1) {
                     alert("error with selection player");
                 }
-
+                showPlayer(p, ctx);
             }
+
+            showPlayer = function (p, ctx) {
+                var r = 0.5 * sizeOfCell;
+                ctx.beginPath();
+                var x = players_x[p];
+                var y = players_y[p];
+                ctx.arc(y * sizeOfCell + r,
+                        x * sizeOfCell + r,
+                        r - 2, 0, Math.PI * 2, true);
+                //ctx.fillStyle = "#00aa00";
+                ctx.fillStyle = players_colors[p];
+                ctx.fill();
+            };
 
             var game = $.connection.gameHub;
 
