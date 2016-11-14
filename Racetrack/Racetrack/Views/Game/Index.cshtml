@@ -4,7 +4,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    @*<link rel="stylesheet" href="StyleSheet.css" />*@
 </head>
 <body>
     <h2>Racetrack</h2>
@@ -12,17 +11,8 @@
         <input type="text" id="message" />
         <input type="button" id="sendmessage" value="Send" />
         <input type="hidden" id="displayname" />
-        @*<canvas id="arena"></canvas>*@
-        @*<canvas id="player1"></canvas>
-            <canvas id="player2"></canvas>
-            <canvas id="player3"></canvas>
-            <canvas id="player4"></canvas>*@
     </div>
     <canvas id="arena"></canvas>
-    @*<canvas id="player1"></canvas>*@
-
-    @*<canvas id="possibility"></canvas>*@
-
 </body>
 </html>
 @section scripts {
@@ -36,15 +26,16 @@
     <!--Add script to update the page and send messages.-->
     <script type="text/javascript">
         $(function () {
-            // arena - отрисовка фона
             var map;
             var arena_color = "#0000aa";
+            var numOfPlayers = 0;
+            var maxNumOfPlayers = 4;
             var names = [];
             var players_id = [0, 1, 2, 3];
             var players_x = [1, 2, 3, 4];
-            var players_y = [4, 3, 2, 1];
+            var players_y = [17, 17, 17, 17];
             var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
-            var players_connect = [1, 1, 1, 1]; // показывает подключен ли данный игрок
+            var players_connect = [1, 1, 1, 1]; // показывает подключен ли данный игрок // гряхный хак
 
             var sizeOfCell = 32; //размер одной клетки
 
@@ -64,23 +55,6 @@
                                 ctx.fillStyle = arena_color;
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
                             }
-                            //if (map[i][j] == 2) {
-                                //player1_x = j;
-                                //player1_y = i;
-
-                                //players_x[0] = i; players_x[1] = i; players_x[2] = i; players_x[3] = i;
-                                //players_y[0] = j; players_y[1] = j; players_y[2] = j; players_y[3] = j;
-
-                                //showPlayer(0, ctx);
-
-                                //var r = 0.5 * sizeOfCell;
-                                //ctx.beginPath();
-                                //ctx.arc(j * sizeOfCell + r,
-                                //        i * sizeOfCell + r,
-                                //        r - 2, 0, Math.PI * 2, true);
-                                //ctx.fillStyle = "#00aa00";
-                                //ctx.fill();
-                            //}
                         }
                     }
                     //рисование вертикальных линий
@@ -95,15 +69,59 @@
                     }
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
-
-                    showPlayer(0, ctx);
-                    showPlayer(1, ctx);
-                    showPlayer(2, ctx);
-                    showPlayer(3, ctx);
+                    //рисование всех игроков
+                    for (var p = 0; p < maxNumOfPlayers; p++) {
+                        showPlayer(p, ctx);
+                    }
                 }
             };
 
-            drawPlayers = function (name, prevPos, curPos, ctx) {
+            //drawPlayers = function (name, prevPos, curPos, ctx) {
+            //    var p = -1;
+            //    switch (name) {
+            //        case names[0]:
+            //            p = 0;
+            //            break;
+            //        case names[1]:
+            //            p = 1;
+            //            break;
+            //        case names[2]:
+            //            p = 2;
+            //            break;
+            //        case names[3]:
+            //            p = 3;
+            //            break;
+            //        default:
+            //            alert("undefined player");
+            //    }
+            //    if (p == -1) {
+            //        alert("error with selection player");
+            //    }
+            //    showPlayer(p, ctx);
+            //}
+
+            showPlayer = function (p, ctx) {
+                if (players_connect[p]) {
+                    var r = 0.5 * sizeOfCell;
+                    ctx.beginPath();
+                    var x = players_x[p];
+                    var y = players_y[p];
+                    ctx.arc(x * sizeOfCell + r,
+                            y * sizeOfCell + r,
+                            r - 2, 0, Math.PI * 2, true);
+                    ctx.fillStyle = players_colors[p];
+                    ctx.fill();
+                }
+            };
+
+            var game = $.connection.gameHub;
+
+            game.client.showMap = function (worldModel) {
+                map = worldModel.Map.slice();
+                showWorld();
+            };
+
+            getPlayerId = function (name) {
                 var p = -1;
                 switch (name) {
                     case names[0]:
@@ -119,38 +137,38 @@
                         p = 3;
                         break;
                     default:
-                        alert("undefined player");
+                        alert("undefined player in getPlayerId");
                 }
-                if (p == -1) {
-                    alert("error with selection player");
-                }
-                showPlayer(p, ctx);
-            }
-
-            showPlayer = function (p, ctx) {
-                if (players_connect[p]) {
-                    var r = 0.5 * sizeOfCell;
-                    ctx.beginPath();
-                    var x = players_x[p];
-                    var y = players_y[p];
-                    ctx.arc(y * sizeOfCell + r,
-                            x * sizeOfCell + r,
-                            r - 2, 0, Math.PI * 2, true);
-                    ctx.fillStyle = players_colors[p];
-                    ctx.fill();
-                }
+                return p;
             };
 
-            var game = $.connection.gameHub;
-
-            game.client.showMap = function (worldModel) {
-                map = worldModel.Map.slice();
-                showWorld();
+            setPos = function (p, curPos) {
+                //alert("old poses x = " + players_x[p] + " y = " + players_y[p])
+                players_x[p] = curPos.X;
+                players_y[p] = curPos.Y;
+                //alert("new poses x = " + players_x[p] + " y = " + players_y[p])
             };
 
             game.client.showMovements = function (round, name, prevPos, curPos) {
                 map[prevPos.Y][prevPos.X] = 0;
                 map[curPos.Y][curPos.X] = 2;
+                var p = -1;
+                //alert("round = " + round);
+                if (round == 0) {
+                    if (names.length <= maxNumOfPlayers) {
+                        names.push(name);
+                        //alert("names.length = " + names.length);
+                        players_connect[numOfPlayers] = 1;
+                        numOfPlayers++;
+                    } else {
+                        alert("There is maxNumOfPlayers limit = 4");
+                    }
+                }
+                p = getPlayerId(name);
+                //alert("p = getPlayerId(name) = " + p);
+                setPos(p, curPos);
+                //alert("name[ p = " + p + " ] = " + names[p]);
+                
                 showWorld();
             };
             var isCrashed = false;
