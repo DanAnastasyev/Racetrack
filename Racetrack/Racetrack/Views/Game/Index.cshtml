@@ -71,7 +71,7 @@
                     ctx.stroke();
                     //рисование всех игроков
                     for (var p = 0; p < maxNumOfPlayers; p++) {
-                        showPlayer(p, ctx);
+                        showPlayer2(p, ctx);
                     }
                 }
             };
@@ -113,6 +113,48 @@
                     ctx.fill();
                 }
             };
+
+            showPlayer2 = function (p, ctx) {
+                if (players_connect[p]) {
+                    var r = 0.5 * sizeOfCell;
+                    var x = players_x[p];
+                    var y = players_y[p];
+                    ctx.strokeStyle = players_colors[p];
+                    ctx.fillStyle = players_colors[p];
+                    // 7 8 9
+                    // 4 5 6
+                    // 1 2 3 
+                    ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //7
+                    ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //8
+                    ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //9
+                    ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //4
+                    ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.fill(); //5
+                    ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //6
+                    ctx.beginPath(); ctx.arc(x * sizeOfCell - r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //1
+                    ctx.beginPath(); ctx.arc(x * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //2
+                    ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //3
+                }
+            };
+
+            showPlayerScope = function (p, ctx) {
+                var r = 0.5 * sizeOfCell;
+                var x = players_x[p];
+                var y = players_y[p];
+                ctx.beginPath();
+                // 7 8 9
+                // 4 5 6
+                // 1 2 3 
+                ctx.arc(x * sizeOfCell - r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //7
+                ctx.arc(x * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //8
+                ctx.arc((x+1) * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //9
+                ctx.arc(x * sizeOfCell - r, y * sizeOfCell, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //4
+                ctx.arc((x+1) * sizeOfCell + r, y * sizeOfCell, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //6
+                ctx.arc(x * sizeOfCell - r, (y+1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //1
+                ctx.arc(x * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //2
+                ctx.arc((x + 1) * sizeOfCell - r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); //ctx.stroke(); //3
+                ctx.fillStyle = players_colors[p];
+                ctx.stroke();
+            }
 
             var game = $.connection.gameHub;
 
@@ -168,8 +210,8 @@
                 //alert("p = getPlayerId(name) = " + p);
                 setPos(p, curPos);
                 //alert("name[ p = " + p + " ] = " + names[p]);
-                
                 showWorld();
+                //showPlayerScope(p);
             };
             var isCrashed = false;
             game.client.onCrash = function () {
