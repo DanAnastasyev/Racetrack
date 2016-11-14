@@ -40,9 +40,9 @@
             var map;
             var arena_color = "#0000aa";
             var names = [];
-            var players_id = [];
-            var players_x = [];
-            var Players_y = [];
+            var players_id = [0, 1, 2, 3];
+            var players_x = [1, 11, -1, -1];
+            var players_y = [1, 11, -1, -1];
             var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
 
 
@@ -64,12 +64,12 @@
                                 ctx.fillStyle = arena_color;
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
                             }
-                            if (map[i][j] == 2) {
+                            //if (map[i][j] == 2) {
                                 //player1_x = j;
                                 //player1_y = i;
 
-                                players_x[0] = i; players_x[1] = i; players_x[2] = i; players_x[3] = i;
-                                players_y[0] = j; players_y[1] = j; players_y[2] = j; players_y[3] = j;
+                                //players_x[0] = i; players_x[1] = i; players_x[2] = i; players_x[3] = i;
+                                //players_y[0] = j; players_y[1] = j; players_y[2] = j; players_y[3] = j;
 
                                 //showPlayer(0, ctx);
 
@@ -80,7 +80,7 @@
                                 //        r - 2, 0, Math.PI * 2, true);
                                 //ctx.fillStyle = "#00aa00";
                                 //ctx.fill();
-                            }
+                            //}
                         }
                     }
                     //рисование вертикальных линий
@@ -96,6 +96,22 @@
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
 
+                    var r = 0.5 * sizeOfCell;
+                    ctx.beginPath();
+                    var x = players_x[0];
+                    var y = players_y[0];
+                    ctx.arc(x * sizeOfCell + r,
+                            x * sizeOfCell + r,
+                            r - 2, 0, Math.PI * 2, true);
+                    //ctx.fillStyle = "#00aa00";
+                    ctx.fillStyle = players_colors[0];
+                    ctx.fill();
+
+                    alert(players_colors[0]);
+                    //showPlayer(0, ctx);
+                    //showPlayer(1, ctx);
+                    //showPlayer(2, ctx);
+                    //showPlayer(3, ctx);
 
                 }
                 //// player1 - отрисовка 1 игрока
