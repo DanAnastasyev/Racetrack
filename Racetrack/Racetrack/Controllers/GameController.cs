@@ -16,6 +16,11 @@ namespace Racetrack.Controllers {
 		[Authorize]
 		[HttpPost]
 		public ActionResult WaitForConnection(GameSettingsModel game) {
+			GamesManager.Instance.AddPlayerToMap(User.Identity.GetUserId(), game.Map);
+			if (game.WithAI == "true") {
+				GamesManager.Instance.BeginSinglePlayerGame(User.Identity.GetUserId());
+				return RedirectToAction("Index");
+			}
 			return View();
 		}
 
@@ -29,6 +34,7 @@ namespace Racetrack.Controllers {
 		public ActionResult Result() {
 			var players = GamesManager.Instance.GetGame(User.Identity.GetUserId()).GetPlayers();
 			players.Sort();
+			GamesManager.Instance.DeletePlayer(User.Identity.GetUserId());
 			return View(players);
 		}
 	}

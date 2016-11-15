@@ -13,15 +13,21 @@ namespace Racetrack.GameServer {
 		private readonly WorldModel _world;
 		private int _movesCount; // число игроков, походивших в данном раунде
 		private int _numberOfAlivePlayers;
-		private Strategy _aiStrategy;
+		private readonly Strategy _aiStrategy;
+		private readonly bool _isSinglePlayer;
 
-		public Game() {
+		public Game(bool isSinglePlayer = false) {
 			_players = new Dictionary<string, PlayerModel>();
 			_world = new WorldModel(HttpContext.Current.Server.MapPath("~/GameServer/Resources/map.txt"));
+			_isSinglePlayer = isSinglePlayer;
 
-			AddPlayer("AI", "AI");
-			_aiStrategy = new Strategy(_world, _players["AI"], 1);
-			GamesManager.Instance.AddAIToGame(this, "AI");
+			if (_isSinglePlayer) {
+				AddPlayer("AI", "AI");
+				// AI - не игрок
+				--_numberOfAlivePlayers;
+				_aiStrategy = new Strategy(_world, _players["AI"], 1);
+				GamesManager.Instance.AddAIToGame(this, "AI");
+			}
 		}
 
 		public int RoundNumber { get; private set; } // номер текущего раунда
@@ -82,7 +88,9 @@ namespace Racetrack.GameServer {
 
 		// Конец раунда - это момент, когда все игроки уже походили и нужно им дать возможность снова походить
 		private void UpdateRound(string playerId, IGameUpdatesHandler handler) {
-			AIMovement(handler);
+			if (_isSinglePlayer) {
+				AIMovement(handler);
+			}
 
 			// Если все игроки вылетели с поля
 			if (_numberOfAlivePlayers == 0) {

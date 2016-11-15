@@ -58,7 +58,7 @@ namespace Racetrack.GameServer.Models {
 					//  кто проехал дальше ~ сделал больше ходов
 					return other.NumberOfMovements - NumberOfMovements;
 				}
-				return IsWinner ? -1 : 1;
+				return IsAlive ? -1 : 1;
 			}
 			// Если оба не доехали до финиша и не слетели с трассы -
 			//  сортируем лексикографически
