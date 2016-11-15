@@ -29,7 +29,7 @@ namespace Racetrack.GameServer.Hubs {
 			game.AddPlayer(playerId, Context.User.Identity.Name);
 
 			await Groups.Add(Context.ConnectionId, gameId);
-			Clients.Group(gameId).showMap(game.GetWorldModel());
+			Clients.Group(gameId).showMap(game.GetWorldModel(), playerId);
 			await base.OnConnected();
 		}
 
@@ -77,7 +77,7 @@ namespace Racetrack.GameServer.Hubs {
 		public void OnDeletePlayer(string playerId) {
 			var gameId = _gameManager.GetUserGroup(playerId);
 			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
-			Clients.Group(gameId, playerId).showMap(game.GetWorldModel());
+			Clients.Group(gameId, playerId).showMap(game.GetWorldModel(), playerId);
 		}
 
 		#endregion
