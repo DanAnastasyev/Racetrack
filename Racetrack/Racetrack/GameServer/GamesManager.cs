@@ -37,19 +37,23 @@ namespace Racetrack.GameServer {
 				IGamesManagerCallbacks handler) {
 			var map = _playerToMap[userId];
 			_playerToMap.Remove(userId);
-			_playersQueue[map].Add(new UserConnection(userId, connectionId));
-			if (_playersQueue.Count > 0) {
-				_games.Add(new Game());
-
-				var connectionIds = new List<string>();
-				for (var i = 0; i < 1; ++i) {
-					connectionIds.Add(_playersQueue[map][i].ConnectionId);
-					_players[_playersQueue[map][i].UserId] = _games.Last();
-				}
-				_playersQueue[map].RemoveRange(0, 1);
-
-				handler.JoinPlayers(connectionIds);
+			if (!_playersQueue.ContainsKey(map)) {
+				_playersQueue[map] = new List<UserConnection>();
 			}
+			_playersQueue[map].Add(new UserConnection(userId, connectionId));
+			if (_playersQueue[map].Count <= 1) {
+				return;
+			}
+			_games.Add(new Game());
+
+			var connectionIds = new List<string>();
+			for (var i = 0; i < 2; ++i) {
+				connectionIds.Add(_playersQueue[map][i].ConnectionId);
+				_players[_playersQueue[map][i].UserId] = _games.Last();
+			}
+			_playersQueue[map].RemoveRange(0, 2);
+
+			handler.JoinPlayers(connectionIds);
 		}
 
 		public void BeginSinglePlayerGame(string userId) {
