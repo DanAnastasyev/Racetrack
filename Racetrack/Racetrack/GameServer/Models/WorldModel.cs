@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Racetrack.GameServer.Models {
@@ -8,9 +9,10 @@ namespace Racetrack.GameServer.Models {
 		// координаты точек, через которые должен проехать игрок
 		// первая пара - старт, последняя - финиш
 		// пересечение старта после прохождения всех waypoint'ов - переход на новый круг
-		private List<Line> _wayPoints;
+		public List<Line> WayPoints { get; private set; }
 
-		[JsonProperty("Map")] public List<List<int>> Map;
+		[JsonProperty("Map")]
+		public List<List<int>> Map;
 
 		public List<Coordinates> PlayersStartPositions;
 
@@ -57,7 +59,7 @@ namespace Racetrack.GameServer.Models {
 					}
 				}
 
-				_wayPoints = new List<Line>();
+				WayPoints = new List<Line>();
 				while (true) {
 					line = reader.ReadLine();
 					if (line == null) {
@@ -65,7 +67,7 @@ namespace Racetrack.GameServer.Models {
 					}
 
 					fields = line.Split(' ');
-					_wayPoints.Add(new Line(
+					WayPoints.Add(new Line(
 						new Coordinates(int.Parse(fields[1]), int.Parse(fields[0])),
 						new Coordinates(int.Parse(fields[3]), int.Parse(fields[2]))));
 				}
@@ -170,17 +172,30 @@ namespace Racetrack.GameServer.Models {
 			return false;
 		}
 
+		public bool IsOnRightSideOfFinishLine(int x, int y) {
+			var line = WayPoints.Last();
+			return Area(line.First, line.Second, new Coordinates(x, y)) > 0;
+		}
+
 		// Возвращает список пересеченных waypoint'ов
 		public List<int> FindIntersectedWayPoints(Line movement) {
 			var intersectedWayPoints = new List<int>();
-			for (var i = 0; i < _wayPoints.Count; ++i) {
-				if (IsIntersects(movement, _wayPoints[i])) {
+			for (var i = 0; i < WayPoints.Count; ++i) {
+				if (IsIntersects(movement, WayPoints[i])) {
 					intersectedWayPoints.Add(i);
 				}
 			}
 			return intersectedWayPoints;
 		}
 
-		public int WayPointsCount() => _wayPoints.Count;
+		public bool IsFinishLineIntersected(Line movement) {
+			return IsIntersects(movement, WayPoints.Last());
+		}
+
+		public int WayPointsCount() => WayPoints.Count;
+
+		public Line GetFinishLine() {
+			return WayPoints.Last();
+		}
 	}
 }

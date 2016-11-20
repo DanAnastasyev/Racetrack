@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Racetrack.GameServer.Models {
@@ -9,32 +11,31 @@ namespace Racetrack.GameServer.Models {
 		[JsonProperty("key")]
 		public int MoveType { get; set; }
 
+		private static readonly Dictionary<int, Tuple<int, int>> moveTypeToDelta =
+			new Dictionary<int, Tuple<int, int>> {
+				{1, new Tuple<int, int>(-1, 1)},
+				{2, new Tuple<int, int>(0, 1)},
+				{3, new Tuple<int, int>(1, 1)},
+				{4, new Tuple<int, int>(-1, 0)},
+				{5, new Tuple<int, int>(0, 0)},
+				{6, new Tuple<int, int>(1, 0)},
+				{7, new Tuple<int, int>(-1, -1)},
+				{8, new Tuple<int, int>(0, -1)},
+				{9, new Tuple<int, int>(1, -1)}
+			};
+
 		// Маппинг клавиш на перемещение по горизонтали
 		public int GetDeltaY() {
-			if ((MoveType >= 7) && (MoveType <= 9)) {
-				return -1;
-			}
-			if ((MoveType >= 4) && (MoveType <= 6)) {
-				return 0;
-			}
-			if ((MoveType >= 1) && (MoveType <= 3)) {
-				return 1;
-			}
-			throw new ArgumentOutOfRangeException();
+			return moveTypeToDelta[MoveType].Item2;
 		}
 
 		// Маппинг клавиш на перемещение по вертикали
 		public int GetDeltaX() {
-			if ((MoveType == 1) || (MoveType == 4) || (MoveType == 7)) {
-				return -1;
-			}
-			if ((MoveType == 2) || (MoveType == 5) || (MoveType == 8)) {
-				return 0;
-			}
-			if ((MoveType == 3) || (MoveType == 6) || (MoveType == 9)) {
-				return 1;
-			}
-			throw new ArgumentOutOfRangeException();
+			return moveTypeToDelta[MoveType].Item1;
+		}
+
+		public MoveModel(int dx, int dy) {
+			MoveType = moveTypeToDelta.FirstOrDefault(x => ( x.Value.Item1 == dx && x.Value.Item2 == dy )).Key;
 		}
 	}
 }

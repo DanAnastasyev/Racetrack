@@ -26,10 +26,10 @@ namespace Racetrack.GameServer.Hubs {
 			var gameId = _gameManager.GetUserGroup(playerId);
 
 			var game = _gameManager.GetGame(playerId);
-			game.AddPlayer(playerId);
+			game.AddPlayer(playerId, Context.User.Identity.Name);
 
 			await Groups.Add(Context.ConnectionId, gameId);
-			Clients.Group(gameId).showMap(game.GetWorldModel());
+			Clients.Group(gameId).showMap(game.GetWorldModel(), playerId);
 			await base.OnConnected();
 		}
 
@@ -47,7 +47,7 @@ namespace Racetrack.GameServer.Hubs {
 		#region IGameUpdatesHandler
 
 		public void OnCarCrash(string playerId) {
-			Clients.Caller.onCrash();
+			Clients.Client(playerId).onCrash();
 		}
 
 		public void OnUpdateRound(string playerId) {
@@ -67,7 +67,7 @@ namespace Racetrack.GameServer.Hubs {
 		public void OnEndOfGame(string playerId, bool isWinner) {
 			var gameId = _gameManager.GetUserGroup(playerId);
 			if (isWinner) {
-				Clients.Caller.showEndOfGame(true);
+				Clients.Client(playerId).showEndOfGame(true);
 				Clients.Group(gameId, playerId).showEndOfGame(false);
 			} else {
 				Clients.Group(gameId).showEndOfGame(false);
@@ -77,7 +77,7 @@ namespace Racetrack.GameServer.Hubs {
 		public void OnDeletePlayer(string playerId) {
 			var gameId = _gameManager.GetUserGroup(playerId);
 			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
-			Clients.Group(gameId, playerId).showMap(game.GetWorldModel());
+			Clients.Group(gameId, playerId).showMap(game.GetWorldModel(), playerId);
 		}
 
 		#endregion

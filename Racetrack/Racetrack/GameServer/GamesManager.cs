@@ -14,35 +14,59 @@ namespace Racetrack.GameServer {
 			}
 		}
 
-		private static readonly Lazy<GamesManager> _instance = new Lazy<GamesManager>(() => new GamesManager());
+		private static readonly Lazy<GamesManager> _instance =
+			new Lazy<GamesManager>(() => new GamesManager());
 		private readonly List<Game> _games;
 		private readonly Dictionary<string, Game> _players;
-		private readonly List<UserConnection> _playersQueue;
+		// список ожидающих подключения игроков для каждой карты
+		private readonly Dictionary<string, List<UserConnection>> _playersQueue;
+		private readonly Dictionary<string, string> _playerToMap;
 
 		public GamesManager() {
 			_games = new List<Game>();
-			_playersQueue = new List<UserConnection>();
+			_playersQueue = new Dictionary<string, List<UserConnection>>();
 			_players = new Dictionary<string, Game>();
+			_playerToMap = new Dictionary<string, string>();
 		}
 
 		public static GamesManager Instance => _instance.Value;
 
 		public Game GetGame(string userId) => _players[userId];
 
-		public void AddPlayerToWaitingQueue(string userId, string connectionId, IGamesManagerCallbacks handler) {
-			_playersQueue.Add(new UserConnection(userId, connectionId));
-			if (_playersQueue.Count > 1) {
+		public void AddPlayerToWaitingQueue(string userId, string connectionId, 
+				IGamesManagerCallbacks handler) {
+			var map = _playerToMap[userId];
+			_playerToMap.Remove(userId);
+			_playersQueue[map].Add(new UserConnection(userId, connectionId));
+			if (_playersQueue.Count > 0) {
 				_games.Add(new Game());
 
 				var connectionIds = new List<string>();
-				for (var i = 0; i < 2; ++i) {
-					connectionIds.Add(_playersQueue[i].ConnectionId);
-					_players[_playersQueue[i].UserId] = _games.Last();
+				for (var i = 0; i < 1; ++i) {
+					connectionIds.Add(_playersQueue[map][i].ConnectionId);
+					_players[_playersQueue[map][i].UserId] = _games.Last();
 				}
-				_playersQueue.RemoveRange(0, 2);
+				_playersQueue[map].RemoveRange(0, 1);
 
 				handler.JoinPlayers(connectionIds);
 			}
+		}
+
+		public void BeginSinglePlayerGame(string userId) {
+			_games.Add(new Game(true));
+			_players[userId] = _games.Last();
+		} 
+
+		public void AddAIToGame(Game game, string aiId) {
+			_players[aiId] = game;
+		}
+
+		public void AddPlayerToMap(string userId, string map) {
+			_playerToMap[userId] = map;
+		}
+
+		public void DeletePlayer(string userId) {
+			_players.Remove(userId);
 		}
 
 		public string GetUserGroup(string userId) {
