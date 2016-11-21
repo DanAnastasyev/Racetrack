@@ -81,17 +81,6 @@
             };
 
             showPlayer = function (p, ctx) {
-                //if (players_connect[p]) {
-                //    //var r = 0.5 * sizeOfCell;
-                //    //ctx.beginPath();
-                //    //var x = players_x[p];
-                //    //var y = players_y[p];
-                //    //ctx.arc(x * sizeOfCell + r,
-                //    //        y * sizeOfCell + r,
-                //    //        r - 2, 0, Math.PI * 2, true);
-                //    //ctx.fillStyle = players_colors[p];
-                //    //ctx.fill();
-                //}
                 var r = 0.5 * sizeOfCell;
                 var x = players_x[p];
                 var y = players_y[p];
@@ -170,17 +159,16 @@
 
                 //var p = getPlayerId(name);
                 //if (p == -1) {
-                //    if (names.length <= maxNumOfPlayers) {
+                //    if (names.length() < 3) {
                 //        names.push(name);
-                //        //alert("names.length = " + names.length);
+                //        p = numOfPlayers;
                 //        players_connect[numOfPlayers] = 1;
                 //        numOfPlayers++;
                 //    } else {
                 //        alert("There is maxNumOfPlayers limit = 4");
                 //    }
                 //}
-                //p = getPlayerId(name);
-                showWorld(0);
+                showWorld(-1);
             };
 
             getPlayerId = function (name) {
@@ -199,8 +187,8 @@
                         p = 3;
                         break;
                     default:
-                        return p = -1;
                         //alert("undefined player in getPlayerId");
+                        return p = -1;
                 }
                 return p;
             };
