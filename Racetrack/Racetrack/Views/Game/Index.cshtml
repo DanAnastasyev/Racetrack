@@ -34,6 +34,8 @@
             var players_id = [0, 1, 2, 3];
             var players_x = [1, 2, 3, 4];
             var players_y = [17, 17, 17, 17];
+            var players_vx = [0, 0, 0, 0];
+            var players_vy = [0, 0, 0, 0];
             var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
             var players_connect = [1, 1, 1, 1]; // показывает подключен ли данный игрок // грязный хак
 
@@ -72,10 +74,12 @@
                     //рисование всех игроков
                     for (var i = 0; i < maxNumOfPlayers; i++) {
                         showPlayer(i, ctx);
+                        showPlayerScope2(i, ctx);
                     }
-                    if (p != -1) {
-                        showPlayerScope2(p, ctx);
-                    }
+
+                    //if (p != -1) {
+                    //    showPlayerScope2(p, ctx);
+                    //}
                     //showPlayerScope2(p, ctx);
                 }
             };
@@ -134,8 +138,8 @@
 
             showPlayerScope2 = function (p, ctx) {
                 var r = 0.5 * sizeOfCell;
-                var x = players_x[p];
-                var y = players_y[p];
+                var x = players_x[p] + players_vx[p];
+                var y = players_y[p] + players_vy[p];
                 ctx.strokeStyle = players_colors[p];
                 ctx.fillStyle = players_colors[p];
                 // 7 8 9
@@ -145,7 +149,7 @@
                 ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //8
                 ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //9
                 ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //4
-                //ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.fill(); //5
+                ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //5
                 ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //6
                 ctx.beginPath(); ctx.arc(x * sizeOfCell - r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //1
                 ctx.beginPath(); ctx.arc(x * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //2
@@ -156,7 +160,6 @@
 
             game.client.showMap = function (worldModel, name) {
                 map = worldModel.Map.slice();
-
                 //var p = getPlayerId(name);
                 //if (p == -1) {
                 //    if (names.length() < 3) {
@@ -168,6 +171,9 @@
                 //        alert("There is maxNumOfPlayers limit = 4");
                 //    }
                 //}
+
+                //p = getPlayerId(name);
+                //showWorld(p)
                 showWorld(-1);
             };
 
@@ -197,6 +203,8 @@
                 //alert("old poses x = " + players_x[p] + " y = " + players_y[p])
                 players_x[p] = curPos.X;
                 players_y[p] = curPos.Y;
+                players_vx[p] = curPos.X - prevPos.X;
+                players_vy[p] = curPos.Y - prevPos.Y;
                 //alert("new poses x = " + players_x[p] + " y = " + players_y[p])
             };
 
@@ -218,6 +226,8 @@
                 }
 
                 p = getPlayerId(name);
+                //p = getPlayerId(myName);
+
                 //alert("p = getPlayerId(name) = " + p);
                 setPos(p, prevPos, curPos);
                 //alert("name[ p = " + p + " ] = " + names[p]);
