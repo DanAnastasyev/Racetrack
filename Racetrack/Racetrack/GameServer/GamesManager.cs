@@ -47,11 +47,15 @@ namespace Racetrack.GameServer {
 			_games.Add(new Game());
 
 			var connectionIds = new List<string>();
+			var userIds = new List<string>();
 			for (var i = 0; i < 2; ++i) {
 				connectionIds.Add(_playersQueue[map][i].ConnectionId);
+				userIds.Add( _playersQueue[map][i].UserId );
 				_players[_playersQueue[map][i].UserId] = _games.Last();
 			}
 			_playersQueue[map].RemoveRange(0, 2);
+
+			_games.Last().PlayerIds = userIds;
 
 			handler.JoinPlayers(connectionIds);
 		}

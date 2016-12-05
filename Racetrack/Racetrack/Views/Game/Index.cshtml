@@ -33,7 +33,9 @@
 
 			var game = $.connection.gameHub;
 
-			game.client.showMap = function(worldModel, name) {
+			game.client.showMap = function (worldModel, myName, allPlayers) {
+				console.log(myName);
+				console.log(allPlayers);
 				map = worldModel.Map.slice();
 				showWorld();
 			};
