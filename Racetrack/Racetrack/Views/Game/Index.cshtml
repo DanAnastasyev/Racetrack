@@ -31,6 +31,7 @@
             var numOfPlayers = 0;
             var maxNumOfPlayers = 4;
             var names = [];
+            var myname;
             var players_id = [0, 1, 2, 3];
             var players_x = [1, 2, 3, 4];
             var players_y = [17, 17, 17, 17];
@@ -41,7 +42,7 @@
 
             var sizeOfCell = 32; //размер одной клетки
 
-            function showWorld(p) {
+            function showWorld() {
                 // arena - отрисовка фона
                 var arena = document.getElementById('arena');
                 if (arena.getContext) {
@@ -71,6 +72,7 @@
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
 
+                    var p = getPlayerId(myname);
                     //рисование всех игроков
                     for (var i = 0; i < maxNumOfPlayers; i++) {
                         showPlayer(i, ctx);
@@ -164,21 +166,19 @@
 
             game.client.showMap = function (worldModel, myName, allPlayers) {
                 map = worldModel.Map.slice();
-                //var p = getPlayerId(name);
-                //if (p == -1) {
-                //    if (names.length() < 3) {
-                //        names.push(name);
-                //        p = numOfPlayers;
-                //        players_connect[numOfPlayers] = 1;
-                //        numOfPlayers++;
-                //    } else {
-                //        alert("There is maxNumOfPlayers limit = 4");
-                //    }
-                //}
-
-                //p = getPlayerId(name);
-                //showWorld(p)
-                showWorld(-1);
+                myname = myName;
+                alert("allPlayers size = " + allPlayers.length)
+                for (var i = 0; i < allPlayers.length; ++i) {
+                    if (names.length < maxNumOfPlayers) {
+                        names.push(allPlayers[i]);
+                        //p = numOfPlayers;
+                        players_connect[numOfPlayers] = 1;
+                        numOfPlayers++;
+                    } else {
+                        alert("There is maxNumOfPlayers limit = 4");
+                    }
+                }
+                showWorld();
             };
 
             getPlayerId = function (name) {
@@ -216,26 +216,26 @@
                 map[prevPos.Y][prevPos.X] = 0;
                 map[curPos.Y][curPos.X] = 2;
 
-                var p = -1;
+                //var p = -1;
                 //alert("round = " + round);
-                if (round == 0) {
-                    if (names.length <= maxNumOfPlayers) {
-                        names.push(name);
-                        //alert("names.length = " + names.length);
-                        players_connect[numOfPlayers] = 1;
-                        numOfPlayers++;
-                    } else {
-                        alert("There is maxNumOfPlayers limit = 4");
-                    }
-                }
+                //if (round == 0) {
+                //    if (names.length <= maxNumOfPlayers) {
+                //        names.push(name);
+                //        //alert("names.length = " + names.length);
+                //        players_connect[numOfPlayers] = 1;
+                //        numOfPlayers++;
+                //    } else {
+                //        alert("There is maxNumOfPlayers limit = 4");
+                //    }
+                //}
 
-                p = getPlayerId(name);
+                var p = getPlayerId(name);
                 //p = getPlayerId(myName);
 
                 //alert("p = getPlayerId(name) = " + p);
                 setPos(p, prevPos, curPos);
                 //alert("name[ p = " + p + " ] = " + names[p]);
-                showWorld(p);
+                showWorld();
                 //showPlayerScope(p);
             };
             var isCrashed = false;
