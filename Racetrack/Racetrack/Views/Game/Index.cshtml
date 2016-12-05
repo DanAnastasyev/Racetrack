@@ -32,6 +32,7 @@
             var maxNumOfPlayers = 4;
             var names = [];
             var myname;
+            var counter = 0;
             var players_id = [0, 1, 2, 3];
             var players_x = [1, 2, 3, 4];
             var players_y = [17, 17, 17, 17];
@@ -167,8 +168,10 @@
             game.client.showMap = function (worldModel, myName, allPlayers) {
                 map = worldModel.Map.slice();
                 myname = myName;
-                alert("allPlayers size = " + allPlayers.length)
-                for (var i = 0; i < allPlayers.length; ++i) {
+                counter++;
+                alert("counter = " + counter);
+                //alert("allPlayers size = " + allPlayers.length)
+                for (var i = 0; i < allPlayers.length-1; ++i) {
                     if (names.length < maxNumOfPlayers) {
                         names.push(allPlayers[i]);
                         //p = numOfPlayers;
