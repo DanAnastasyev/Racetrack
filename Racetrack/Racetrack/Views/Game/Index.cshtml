@@ -32,7 +32,6 @@
             var maxNumOfPlayers = 4;
             var names = [];
             var myname;
-            var counter = 0;
             var players_id = [0, 1, 2, 3];
             var players_x = [1, 2, 3, 4];
             var players_y = [17, 17, 17, 17];
@@ -73,23 +72,16 @@
                     ctx.strokeStyle = "#eee";
                     ctx.stroke();
 
+                    //рисование всех игроков
+                    for (var i = 0; i < maxNumOfPlayers; i++) {
+                        showPlayer(i, ctx);
+                    }
+                    // рисование возможности хода игрока
                     var p = getPlayerId(myname);
                     if (p == -1) {
                         alert("p=-1 in showWorld");
                     }
-
-                    //рисование всех игроков
-                    for (var i = 0; i < maxNumOfPlayers; i++) {
-                        showPlayer(i, ctx);
-                        if (i == p) {
-                            showPlayerScope2(p, ctx);
-                        }
-                    }
-
-                    //if (p != -1) {
-                    //    showPlayerScope2(p, ctx);
-                    //}
-                    //showPlayerScope2(p, ctx);
+                    showPlayerScope(p, ctx);
                 }
             };
 
@@ -103,49 +95,7 @@
 
             };
 
-            showPlayer2 = function (p, ctx) {
-                if (players_connect[p]) {
-                    var r = 0.5 * sizeOfCell;
-                    var x = players_x[p];
-                    var y = players_y[p];
-                    ctx.strokeStyle = players_colors[p];
-                    ctx.fillStyle = players_colors[p];
-                    // 7 8 9
-                    // 4 5 6
-                    // 1 2 3
-                    ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //7
-                    ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //8
-                    ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //9
-                    ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //4
-                    //ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.fill(); //5
-                    ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //6
-                    ctx.beginPath(); ctx.arc(x * sizeOfCell - r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //1
-                    ctx.beginPath(); ctx.arc(x * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //2
-                    ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //3
-                }
-            };
-
-            hidePlayerScope = function (p, ctx) {
-                var r = 0.5 * sizeOfCell;
-                var x = players_x[p] + players_vx[p];
-                var y = players_y[p] + players_vy[p];
-                ctx.strokeStyle = '#FFFFFF';
-                ctx.fillStyle = '#FFFFFF';
-                // 7 8 9
-                // 4 5 6
-                // 1 2 3
-                ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //7
-                ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //8
-                ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //9
-                ctx.beginPath(); ctx.arc(x * sizeOfCell - r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //4
-                ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //5
-                ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //6
-                ctx.beginPath(); ctx.arc(x * sizeOfCell - r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //1
-                ctx.beginPath(); ctx.arc(x * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //2
-                ctx.beginPath(); ctx.arc((x + 1) * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.stroke(); //3
-            }
-
-            showPlayerScope2 = function (p, ctx) {
+            showPlayerScope = function (p, ctx) {
                 var r = 0.5 * sizeOfCell;
                 var x = players_x[p] + players_vx[p];
                 var y = players_y[p] + players_vy[p];
@@ -170,13 +120,9 @@
             game.client.showMap = function (worldModel, myName, allPlayers) {
                 map = worldModel.Map.slice();
                 myname = myName;
-                //counter++;
-                //alert("counter = " + counter);
-                //alert("allPlayers size = " + allPlayers.length)
                 for (var i = 0; i < allPlayers.length; ++i) {
                     if (names.length < maxNumOfPlayers) {
                         names.push(allPlayers[i]);
-                        //p = numOfPlayers;
                         players_connect[numOfPlayers] = 1;
                         numOfPlayers++;
                     } else {
@@ -208,39 +154,19 @@
             };
 
             setPos = function (p, prevPos, curPos) {
-                //alert("old poses x = " + players_x[p] + " y = " + players_y[p])
                 players_x[p] = curPos.X;
                 players_y[p] = curPos.Y;
                 players_vx[p] = curPos.X - prevPos.X;
                 players_vy[p] = curPos.Y - prevPos.Y;
-                //alert("new poses x = " + players_x[p] + " y = " + players_y[p])
             };
 
             game.client.showMovements = function (round, name, prevPos, curPos) {
                 //map[prevPos.Y][prevPos.X] = 0;
                 //map[curPos.Y][curPos.X] = 2;
 
-                //var p = -1;
-                //alert("round = " + round);
-                //if (round == 0) {
-                //    if (names.length <= maxNumOfPlayers) {
-                //        names.push(name);
-                //        //alert("names.length = " + names.length);
-                //        players_connect[numOfPlayers] = 1;
-                //        numOfPlayers++;
-                //    } else {
-                //        alert("There is maxNumOfPlayers limit = 4");
-                //    }
-                //}
-
                 var p = getPlayerId(name);
-                //p = getPlayerId(myName);
-
-                //alert("p = getPlayerId(name) = " + p);
                 setPos(p, prevPos, curPos);
-                //alert("name[ p = " + p + " ] = " + names[p]);
                 showWorld();
-                //showPlayerScope(p);
             };
             var isCrashed = false;
             game.client.onCrash = function () {
