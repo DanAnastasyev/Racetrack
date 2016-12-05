@@ -29,7 +29,7 @@ namespace Racetrack.GameServer.Hubs {
 			game.AddPlayer(playerId, Context.User.Identity.Name);
 
 			await Groups.Add(Context.ConnectionId, gameId);
-			Clients.Group(gameId).showMap(game.GetWorldModel(), playerId, game.PlayerIds);
+			Clients.Caller.showMap(game.GetWorldModel(), playerId, game.PlayerIds);
 			await base.OnConnected();
 		}
 
