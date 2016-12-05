@@ -10,6 +10,7 @@ namespace Racetrack.GameServer {
 	public class Game {
 		private static readonly Lazy<Game> _instance = new Lazy<Game>(() => new Game());
 		private readonly Dictionary<string, PlayerModel> _players;
+		public List<string> PlayerIds = new List<string>();
 		private readonly WorldModel _world;
 		private int _movesCount; // число игроков, походивших в данном раунде
 		private int _numberOfAlivePlayers;

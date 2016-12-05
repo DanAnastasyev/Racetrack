@@ -162,7 +162,7 @@
 
             var game = $.connection.gameHub;
 
-            game.client.showMap = function (worldModel, name) {
+            game.client.showMap = function (worldModel, myName, allPlayers) {
                 map = worldModel.Map.slice();
                 //var p = getPlayerId(name);
                 //if (p == -1) {
