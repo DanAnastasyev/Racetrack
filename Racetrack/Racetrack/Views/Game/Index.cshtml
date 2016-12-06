@@ -95,6 +95,20 @@
 
             };
 
+			calculateScopePositions = function(x, y, r) {
+				return {
+					7: [x * sizeOfCell - r, y * sizeOfCell - r],
+					8: [x * sizeOfCell + r, y * sizeOfCell - r],
+					9: [(x + 1) * sizeOfCell + r, y * sizeOfCell - r],
+					4: [x * sizeOfCell - r, y * sizeOfCell + r],
+					5: [x * sizeOfCell + r, y * sizeOfCell + r],
+					6: [(x + 1) * sizeOfCell + r, y * sizeOfCell + r],
+					1: [x * sizeOfCell - r, (y + 1) * sizeOfCell + r],
+					2: [x * sizeOfCell + r, (y + 1) * sizeOfCell + r],
+					3: [(x + 1) * sizeOfCell + r, (y + 1) * sizeOfCell + r]
+				}
+			}
+
             showPlayerScope = function (p, ctx) {
                 var r = 0.5 * sizeOfCell;
                 var x = players_x[p] + players_vx[p];
@@ -192,13 +206,36 @@
             $('#message').focus();
             $.connection.hub.start()
 				.done(function () {
-				    $('#sendmessage')
-						.click(function () {
-						    game.server.updatePlayer({
-						        key: $('#message').val()
-						    });
-						    $('#message').val('').focus();
-						    document.getElementById('sendmessage').disabled = true;
+//				    $('#sendmessage')
+//						.click(function () {
+//						    game.server.updatePlayer({
+//						        key: $('#message').val()
+//						    });
+//						    $('#message').val('').focus();
+//						    document.getElementById('sendmessage').disabled = true;
+//						});
+				    $('#arena')
+						.click(function (e) {
+							var p = getPlayerId(myname);
+							var r = 0.5 * sizeOfCell;
+							var x = players_x[p] + players_vx[p];
+							var y = players_y[p] + players_vy[p];
+
+
+							var scopePositions = calculateScopePositions(x, y, r);
+
+							var posX = e.pageX - $(this).position().left,
+								posY = e.pageY - $(this).position().top;
+
+							for (var i = 1; i <= 9; ++i) {
+								if ((posX - scopePositions[i][0]) * (posX - scopePositions[i][0]) +
+										(posY - scopePositions[i][1]) * (posY - scopePositions[i][1]) <= r * r) {
+									game.server.updatePlayer({
+										key: i
+									});
+									break;
+								}
+							}
 						});
 				});
         });
