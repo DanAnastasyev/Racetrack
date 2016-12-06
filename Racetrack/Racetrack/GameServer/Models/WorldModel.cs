@@ -26,6 +26,13 @@ namespace Racetrack.GameServer.Models {
 		[JsonProperty("Height")]
 		public int Height { get; private set; }
 
+		[JsonProperty("finish_line_x1")]
+		public int FinishLineX1 { get; private set; }
+		[JsonProperty("finish_line_x2")]
+		public int FinishLineX2 { get; private set; }
+		[JsonProperty("finish_line_y")]
+		public int FinishLineY { get; private set; }
+
 		private void ReadMap(string mapPath) {
 			// TODO: errors handling
 			using (var reader = new StreamReader(mapPath)) {
@@ -69,6 +76,9 @@ namespace Racetrack.GameServer.Models {
 						new Coordinates(int.Parse(fields[1]), int.Parse(fields[0])),
 						new Coordinates(int.Parse(fields[3]), int.Parse(fields[2]))));
 				}
+				FinishLineY = WayPoints.Last().First.Y;
+				FinishLineX1 = WayPoints.Last().First.X;
+				FinishLineX1 = WayPoints.Last().Second.X;
 			}
 		}
 
