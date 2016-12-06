@@ -7,11 +7,6 @@
 </head>
 <body>
     <h2>Racetrack</h2>
-    <div class="container">
-        <input type="text" id="message" />
-        <input type="button" id="sendmessage" value="Send" />
-        <input type="hidden" id="displayname" />
-    </div>
     <canvas id="arena"></canvas>
 </body>
 </html>
@@ -33,12 +28,13 @@
             var names = [];
             var myname;
             var players_id = [0, 1, 2, 3];
-            var players_x = [1, 2, 3, 4];
-            var players_y = [17, 17, 17, 17];
-            var players_vx = [0, 0, 0, 0];
-            var players_vy = [0, 0, 0, 0];
+	        var players_x = [];//[1, 2, 3, 4];
+	        var players_y = [];//[17, 17, 17, 17];
+	        var players_vx = [];//[0, 0, 0, 0];
+	        var players_vy = [];//[0, 0, 0, 0];
             var players_colors = ["#4cff00", "#ff0000", "#0000ff", "#ff00ff"];
             var players_connect = [1, 1, 1, 1]; // показывает подключен ли данный игрок // грязный хак
+	        var canMove = true;
 
             var sizeOfCell = 32; //размер одной клетки
 
@@ -52,7 +48,7 @@
                     arena.height = sizeOfCell * n;
                     for (var i = 0; i < map.length; ++i) {
                         for (var j = 0; j < map[i].length; ++j) {
-                            if (map[i][j] == 1) {
+                            if (map[i][j] === 1) {
                                 //ctx.fillStyle = "#0000aa";
                                 ctx.fillStyle = arena_color;
                                 ctx.fillRect(j * sizeOfCell, i * sizeOfCell, sizeOfCell, sizeOfCell);
@@ -73,12 +69,12 @@
                     ctx.stroke();
 
                     //рисование всех игроков
-                    for (var i = 0; i < maxNumOfPlayers; i++) {
+                    for (var i = 0; i < players_x.length; i++) {
                         showPlayer(i, ctx);
                     }
                     // рисование возможности хода игрока
                     var p = getPlayerId(myname);
-                    if (p == -1) {
+                    if (p === -1) {
                         alert("p=-1 in showWorld");
                     }
                     showPlayerScope(p, ctx);
@@ -92,7 +88,6 @@
                 ctx.strokeStyle = players_colors[p];
                 ctx.fillStyle = players_colors[p];
                 ctx.beginPath(); ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true); ctx.fill(); //5
-
             };
 
 			calculateScopePositions = function(x, y, r) {
@@ -132,7 +127,17 @@
             var game = $.connection.gameHub;
 
             game.client.showMap = function (worldModel, myName, allPlayers) {
-                map = worldModel.Map.slice();
+            	map = worldModel.Map.slice();
+            	for (var i = 0; i < map.length; ++i) {
+            		for (var j = 0; j < map[i].length; ++j) {
+            			if (map[i][j] === 2 && players_x.length < allPlayers.length) {
+            				players_x.push(j);
+            				players_y.push(i);
+            				players_vx.push(0);
+            				players_vy.push(0);
+            			}
+            		}
+            	}
                 myname = myName;
                 for (var i = 0; i < allPlayers.length; ++i) {
                     if (names.length < maxNumOfPlayers) {
@@ -186,11 +191,11 @@
             game.client.onCrash = function () {
                 alert("You lose :(");
                 isCrashed = true;
-                document.getElementById('sendmessage').disabled = true;
+	            canMove = false;
             };
             game.client.beginNextRound = function () {
                 if (!isCrashed) {
-                    document.getElementById('sendmessage').disabled = false;
+	                canMove = true;
                 }
             };
             game.client.showEndOfGame = function (isWinner) {
@@ -206,16 +211,11 @@
             $('#message').focus();
             $.connection.hub.start()
 				.done(function () {
-//				    $('#sendmessage')
-//						.click(function () {
-//						    game.server.updatePlayer({
-//						        key: $('#message').val()
-//						    });
-//						    $('#message').val('').focus();
-//						    document.getElementById('sendmessage').disabled = true;
-//						});
 				    $('#arena')
 						.click(function (e) {
+							if (!canMove) {
+								return;
+							}
 							var p = getPlayerId(myname);
 							var r = 0.5 * sizeOfCell;
 							var x = players_x[p] + players_vx[p];
@@ -233,6 +233,7 @@
 									game.server.updatePlayer({
 										key: i
 									});
+									canMove = false;
 									break;
 								}
 							}

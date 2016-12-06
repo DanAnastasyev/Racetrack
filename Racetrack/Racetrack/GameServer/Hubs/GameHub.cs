@@ -47,7 +47,7 @@ namespace Racetrack.GameServer.Hubs {
 		#region IGameUpdatesHandler
 
 		public void OnCarCrash(string playerId) {
-			Clients.Client(playerId).onCrash();
+			Clients.Caller.onCrash();
 		}
 
 		public void OnUpdateRound(string playerId) {
@@ -67,8 +67,8 @@ namespace Racetrack.GameServer.Hubs {
 		public void OnEndOfGame(string playerId, bool isWinner) {
 			var gameId = _gameManager.GetUserGroup(playerId);
 			if (isWinner) {
-				Clients.Client(playerId).showEndOfGame(true);
-				Clients.Group(gameId, playerId).showEndOfGame(false);
+				Clients.Client(Context.ConnectionId).showEndOfGame(true);
+				Clients.Group(gameId, Context.ConnectionId).showEndOfGame(false);
 			} else {
 				Clients.Group(gameId).showEndOfGame(false);
 			}

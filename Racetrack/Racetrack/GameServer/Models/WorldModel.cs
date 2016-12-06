@@ -50,12 +50,10 @@ namespace Racetrack.GameServer.Models {
 					Map.Add(new List<int>(Width));
 					for (var j = 0; j < Width; ++j) {
 						var val = int.Parse(fields[j]);
-						if (val != 2) {
-							Map[i].Add(val);
-						} else {
+						if (val == 2) {
 							PlayersStartPositions.Add(new Coordinates(j, i));
-							Map[i].Add(0);
 						}
+						Map[i].Add(val);
 					}
 				}
 
