@@ -60,8 +60,9 @@ namespace Racetrack.GameServer {
 			handler.JoinPlayers(connectionIds);
 		}
 
-        public void BeginSinglePlayerGame(string userId) {
+		public void BeginSinglePlayerGame(string userId) {
 			_games.Add(new Game(true));
+			_games.Last().PlayerIds = new List<string>() {"AI", userId};
 			_players[userId] = _games.Last();
 		} 
 
