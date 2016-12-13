@@ -63,10 +63,10 @@ namespace Racetrack.GameServer {
 			player.Move(move);
 			++_movesCount;
 			if (!_world.IsMovementOutOfTrack(player.GetLastMovement())) {
-				handler?.OnShowMovements(playerId);
+				handler?.OnShowMovements(playerId, _world.CalculateScope(player));
 				CheckWayPointsIntersections(player, playerId, handler);
 			} else {
-				handler?.OnShowMovements(playerId);
+				handler?.OnShowMovements(playerId, new List<bool>(new bool[9]));
 				handler?.OnCarCrash(playerId);
 				_players[playerId].IsAlive = false;
 				DeletePlayer(playerId, handler);

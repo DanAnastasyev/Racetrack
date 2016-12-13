@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
 using Racetrack.GameServer.Models;
@@ -55,13 +56,13 @@ namespace Racetrack.GameServer.Hubs {
 			Clients.Group(gameId).beginNextRound();
 		}
 
-		public void OnShowMovements(string playerId) {
+		public void OnShowMovements(string playerId, List<bool> scope) {
 			var gameId = _gameManager.GetUserGroup(playerId);
 			var game = _gameManager.GetGame(Context.User.Identity.GetUserId());
 			var player = game.GetPlayer(playerId);
 
 			Clients.Group(gameId).showMovements(game.RoundNumber, playerId,
-				player?.PrevPosition, player?.CurPosition);
+				player?.PrevPosition, player?.CurPosition, scope);
 		}
 
 		public void OnEndOfGame(string playerId, bool isWinner) {

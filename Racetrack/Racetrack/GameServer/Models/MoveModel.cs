@@ -11,7 +11,7 @@ namespace Racetrack.GameServer.Models {
 		[JsonProperty("key")]
 		public int MoveType { get; set; }
 
-		private static readonly Dictionary<int, Tuple<int, int>> moveTypeToDelta =
+		public static readonly Dictionary<int, Tuple<int, int>> MoveTypeToDelta =
 			new Dictionary<int, Tuple<int, int>> {
 				{1, new Tuple<int, int>(-1, 1)},
 				{2, new Tuple<int, int>(0, 1)},
@@ -26,16 +26,16 @@ namespace Racetrack.GameServer.Models {
 
 		// Маппинг клавиш на перемещение по горизонтали
 		public int GetDeltaY() {
-			return moveTypeToDelta[MoveType].Item2;
+			return MoveTypeToDelta[MoveType].Item2;
 		}
 
 		// Маппинг клавиш на перемещение по вертикали
 		public int GetDeltaX() {
-			return moveTypeToDelta[MoveType].Item1;
+			return MoveTypeToDelta[MoveType].Item1;
 		}
 
 		public MoveModel(int dx, int dy) {
-			MoveType = moveTypeToDelta.FirstOrDefault(x => ( x.Value.Item1 == dx && x.Value.Item2 == dy )).Key;
+			MoveType = MoveTypeToDelta.FirstOrDefault(x => ( x.Value.Item1 == dx && x.Value.Item2 == dy )).Key;
 		}
 	}
 }

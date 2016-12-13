@@ -205,5 +205,19 @@ namespace Racetrack.GameServer.Models {
 		public Line GetFinishLine() {
 			return WayPoints.Last();
 		}
+
+		public List<bool> CalculateScope(PlayerModel player) {
+			var res = new List<bool>(new bool[9]);
+			Coordinates beginCoordinates = player.CurPosition;
+			for (int i = -1; i <= 1; ++i) {
+				for (int j = -1; j <= 1; ++j) {
+					int x = beginCoordinates.X + player.Inertia.X + i;
+					int y = beginCoordinates.Y + player.Inertia.Y + j;
+					int pos = MoveModel.MoveTypeToDelta.FirstOrDefault(q => (q.Value.Item1 == i && q.Value.Item2 == j)).Key;
+					res[pos-1] = !IsMovementOutOfTrack(new Line(beginCoordinates, new Coordinates(x, y)));
+				}
+			}
+			return res;
+		}
 	}
 }

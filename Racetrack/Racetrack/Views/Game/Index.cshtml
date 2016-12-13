@@ -39,6 +39,7 @@
 			var finish_line_y;
 			var finish_line_x1, finish_line_x2;
 			var isCurPlayerMoving = false;
+			var curPlayerScope = [];
 
 			var sizeOfCell = 32; //размер одной клетки
 
@@ -128,36 +129,17 @@
 			var y = players_y[p] + players_vy[p];
 			ctx.strokeStyle = players_colors[p];
 			ctx.fillStyle = players_colors[p];
-			// 7 8 9
-			// 4 5 6
-			// 1 2 3
-			ctx.beginPath();
-			ctx.arc(x * sizeOfCell - r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //7
-			ctx.beginPath();
-			ctx.arc(x * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //8
-			ctx.beginPath();
-			ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell - r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //9
-			ctx.beginPath();
-			ctx.arc(x * sizeOfCell - r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //4
-			ctx.beginPath();
-			ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //5
-			ctx.beginPath();
-			ctx.arc((x + 1) * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //6
-			ctx.beginPath();
-			ctx.arc(x * sizeOfCell - r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //1
-			ctx.beginPath();
-			ctx.arc(x * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //2
-			ctx.beginPath();
-			ctx.arc((x + 1) * sizeOfCell + r, (y + 1) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
-			ctx.stroke(); //3
+			var scopePositions = calculateScopePositions(x, y, r);
+			for (var i = 1; i <= 9; ++i) {
+				if (!curPlayerScope[i - 1]) {
+					ctx.globalAlpha = 0.2;
+				} else {
+					ctx.globalAlpha = 0.6;
+				}
+				ctx.beginPath();
+				ctx.arc(scopePositions[i][0], scopePositions[i][1], r - 2, 0, Math.PI * 2, true);
+				ctx.stroke();
+			}
 		}
 
 		var game = $.connection.gameHub;
@@ -187,6 +169,9 @@
 				} else {
 					alert("There is maxNumOfPlayers limit = 4");
 				}
+			}
+			for (var i = 1; i <= 9; ++i) {
+				curPlayerScope.push(true);
 			}
 			showWorld();
 		};
@@ -219,10 +204,12 @@
 			players_vy[p] = curPos.Y - prevPos.Y;
 		};
 
-		game.client.showMovements = function(round, name, prevPos, curPos) {
+		game.client.showMovements = function(round, name, prevPos, curPos, scope) {
 			var p = getPlayerId(name);
-//			setPos(p, prevPos, curPos);
-//			showWorld();
+			if (name === myname) {
+				curPlayerScope = scope;
+			}
+			console.log(scope);
 			var animate = function (duration, prevPos, curPos, p) {
 				// The calculations required for the step function
 				var start = new Date().getTime();
@@ -230,7 +217,7 @@
 
 				var step = function () {
 					isCurPlayerMoving = true;
-					// Get our current progres
+					// Get our current progress
 					var timestamp = new Date().getTime();
 					var progress = Math.min((duration - (end - timestamp)) / duration, 1);
 					// Update the square's property
