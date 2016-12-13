@@ -28,7 +28,7 @@
 			var maxNumOfPlayers = 4;
 			var names = [];
 			var myname;
-			var players_id = [0, 1, 2, 3];
+			var deltas = {};
 			var players_x = [];
 			var players_y = [];
 			var players_vx = [];
@@ -38,6 +38,7 @@
 			var canMove = true;
 			var finish_line_y;
 			var finish_line_x1, finish_line_x2;
+			var isCurPlayerMoving = false;
 
 			var sizeOfCell = 32; //размер одной клетки
 
@@ -89,7 +90,10 @@
 				if (p === -1) {
 					alert("p=-1 in showWorld");
 				}
-				showPlayerScope(p, ctx);
+				console.log(isCurPlayerMoving);
+				if (!isCurPlayerMoving) {
+					showPlayerScope(p, ctx);
+				}
 				ctx.globalAlpha = 1;
 		};
 
@@ -100,7 +104,7 @@
 			ctx.strokeStyle = players_colors[p];
 			ctx.fillStyle = players_colors[p];
 			ctx.beginPath();
-			ctx.arc(x * sizeOfCell + r, y * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
+			ctx.arc((x + deltas[p][0]) * sizeOfCell + r, (y + deltas[p][1]) * sizeOfCell + r, r - 2, 0, Math.PI * 2, true);
 			ctx.fill(); //5
 		};
 
@@ -177,6 +181,7 @@
 			for (var i = 0; i < allPlayers.length; ++i) {
 				if (names.length < maxNumOfPlayers) {
 					names.push(allPlayers[i]);
+					deltas[i] = [0, 0];
 					players_connect[numOfPlayers] = 1;
 					numOfPlayers++;
 				} else {
@@ -216,8 +221,39 @@
 
 		game.client.showMovements = function(round, name, prevPos, curPos) {
 			var p = getPlayerId(name);
-			setPos(p, prevPos, curPos);
-			showWorld();
+//			setPos(p, prevPos, curPos);
+//			showWorld();
+			var animate = function (duration, prevPos, curPos, p) {
+				// The calculations required for the step function
+				var start = new Date().getTime();
+				var end = start + duration;
+
+				var step = function () {
+					isCurPlayerMoving = true;
+					// Get our current progres
+					var timestamp = new Date().getTime();
+					var progress = Math.min((duration - (end - timestamp)) / duration, 1);
+					// Update the square's property
+					deltas[p][0] = (curPos.X - prevPos.X) * progress;
+					deltas[p][1] = (curPos.Y - prevPos.Y) * progress;
+					showWorld();
+
+					// If the animation hasn't finished, repeat the step.
+					if (progress < 1) {
+						requestAnimationFrame(step);
+					} else {
+						deltas[p][0] = deltas[p][1] = 0;
+						isCurPlayerMoving = false;
+						setPos(p, prevPos, curPos);
+						showWorld();
+					}
+				};
+
+				// Start the animation
+				return step();
+			};
+
+			animate(1000, prevPos, curPos, p);
 		};
 		var isCrashed = false;
 		game.client.onCrash = function() {
