@@ -1,0 +1,39 @@
+﻿@model PagedList.IPagedList<Racetrack.Models.Result>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Rating";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Best Players</h3>
+	
+@using (Html.BeginForm("Rating", "Home", FormMethod.Get)) {
+	<p>
+		Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+		<input type="submit" value="Search" />
+	</p>
+}
+
+<table class="table table-inverse">
+	<thead>
+	<tr>
+		<th>@Html.ActionLink("Player", "Rating", new { sortOrder = ViewBag.NameSortParam, currentFilter = ViewBag.CurrentFilter })</th>
+		<th>@Html.ActionLink("Number of movements", "Rating", new { sortOrder = ViewBag.MovementsSortParam, currentFilter = ViewBag.CurrentFilter })</th>
+	</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+			<tr>
+				<td>@Html.DisplayFor(modelItem => item.PlayerName)</td>
+				<td>@Html.DisplayFor(modelItem => item.NumberOfMovements)</td>
+			</tr>
+		}
+	</tbody>
+</table>
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Rating",
+	new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Racetrack.GameServer.Models.PlayerModel>
+
+@{
+	ViewBag.Title = "Game Result";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Best Players</h3>
+<table class="table table-inverse">
+	<thead>
+	<tr>
+		<th>@Html.DisplayName("Position")</th>
+		<th>@Html.DisplayName("Player")</th>
+		<th>@Html.DisplayName("Number of movements")</th>
+		<th>@Html.DisplayName("Result")</th>
+	</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model.Select((value, i) => new { i, value })) {
+			<tr>
+				<td>@(item.i + 1)</td>
+				<td>@Html.DisplayFor(modelItem => item.value.PlayerName)</td>
+				<td>@Html.DisplayFor(modelItem => item.value.NumberOfMovements)</td>
+			@if (item.value.IsWinner) {
+				<td style="color:green">@Html.DisplayName("Winner")</td>
+			} else if (!item.value.IsAlive) {
+				<td style="color:red">@Html.DisplayName("Crashed")</td>
+			} else {
+				<td></td>
+			}
+			</tr>
+		}
+	</tbody>
+</table>
+<br />
